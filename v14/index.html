@@ -27,13 +27,13 @@
         
         .glass-panel { background: var(--glass-bg); backdrop-filter: var(--glass-blur); border: var(--glass-border); box-shadow: var(--glass-shadow); border-radius: 24px; }
         
-        /* --- 4. SNOW MOVED LOWER --- */
+        /* --- SNOW UPDATED POS --- */
         .snow-topper { position: relative; overflow: visible !important; }
         .snow-topper::after {
             content: ''; 
             position: absolute; 
-            /* Moved down to 15px (approx 0.5cm lower than previous) */
-            top: 15px; 
+            /* Moved upper by approx 0.4cm */
+            top: -2px; 
             right: 0; 
             width: 33%; 
             height: 50px;
@@ -111,7 +111,6 @@
         .pool-val { font-weight: 800; color: var(--fuji-teal); }
         .pool-rem { color: var(--fuji-red); font-size: 14px; }
         
-        /* --- 1. EDIT POOL BTN FIXED WIDTH --- */
         .btn-pool-edit { padding: 4px 10px; font-size: 11px; white-space: nowrap; border-radius: 12px; background: #eee; color: #555; border: none; font-weight: 800; width: fit-content; }
 
         .settle-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 12px; }
@@ -134,7 +133,6 @@
         .nav-btn { text-align: center; color: #999; font-size: 10px; font-weight: 700; flex: 1; transition: 0.3s; padding: 10px; border-radius: 16px; }
         .nav-btn.active { color: #666; background: transparent; transform: none; }
         .nav-btn.active .nav-icon { filter: grayscale(100%); opacity: 0.6; }
-        /* --- 3. LARGER NAV EMOJI --- */
         .nav-icon { font-size: 28px; display: block; margin-bottom: 2px; }
         
         .fab { position: fixed; bottom: 120px; left: 25px; width: 60px; height: 60px; background: var(--fuji-red); color: white; border-radius: 20px; display: flex; align-items: center; justify-content: center; font-size: 32px; box-shadow: var(--glass-shadow); z-index: 2100; cursor: pointer; transition: opacity 0.3s; }

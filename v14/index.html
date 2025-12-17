@@ -27,12 +27,24 @@
         
         .glass-panel { background: var(--glass-bg); backdrop-filter: var(--glass-blur); border: var(--glass-border); box-shadow: var(--glass-shadow); border-radius: 24px; }
         
-        /* SNOW FIX */
+        /* --- 2. SNOW FIX: Lowered & 1/3 Width --- */
         .snow-topper { position: relative; overflow: visible !important; }
         .snow-topper::after {
-            content: ''; position: absolute; top: -12px; right: -5px; width: 100px; height: 45px;
-            background: url('snow.png'); background-repeat: no-repeat; background-position: top right;
-            background-size: contain; pointer-events: none; z-index: 50;
+            content: ''; 
+            position: absolute; 
+            /* Lowered by approx 15px (0.4cm) from previous position */
+            top: -2px; 
+            right: 0; 
+            /* Cover 1/3 of the block */
+            width: 33%; 
+            height: 50px;
+            background: url('snow.png'); 
+            background-repeat: no-repeat; 
+            background-position: top right;
+            /* Stretch graphic to fill the width */
+            background-size: 100% auto; 
+            pointer-events: none; 
+            z-index: 50;
         }
 
         .app-header { position: sticky; top: 10px; z-index: 1000; margin: 0 15px 15px 15px; padding: 15px; text-align: center; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(15px); border-radius: 16px; box-shadow: var(--glass-shadow); }
@@ -73,7 +85,6 @@
         .sun-marker-axis { position: absolute; left: 5px; right: 5px; height: 1px; border-top: 2px dotted var(--fuji-gold); z-index: 5; pointer-events: none; }
         .sun-text-axis { position: absolute; left: 0; top: -18px; width: 100%; text-align: center; font-size: 9px; background: #fff; border-radius: 4px; color: var(--fuji-gold); font-weight: bold; padding: 1px; border: 1px solid var(--fuji-gold); }
 
-        /* NOW LINE */
         .now-line { position: absolute; left: 0; right: 0; height: 2px; background: var(--fuji-red); z-index: 50; pointer-events: none; }
         .now-line::before { content: 'NOW'; position: absolute; left: -50px; top: -8px; width: 45px; text-align:right; color: var(--fuji-red); font-size: 10px; font-weight: 800; }
         .now-line::after { content: ''; position: absolute; left: -4px; top: -3px; width: 8px; height: 8px; background: var(--fuji-red); border-radius: 50%; }
@@ -115,7 +126,6 @@
         .p-bubble { padding: 4px 10px; border-radius: 14px; border: 1px solid #ddd; background: #fff; color: #ccc; font-size: 10px; font-weight: 800; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; min-width: 40px; }
         .p-bubble.checked { background: var(--fuji-teal); color: white; border-color: var(--fuji-teal); }
 
-        /* PACKING PROGRESS BAR - ENLARGED */
         .progress-container { margin: 0 15px 15px 15px; background: rgba(255,255,255,0.5); height: 12px; border-radius: 6px; overflow: hidden; }
         .progress-fill { height: 100%; background: var(--fuji-teal); width: 0%; transition: width 0.5s ease; }
         .progress-text { margin: 0 15px 5px 15px; font-size: 20px; font-weight: 800; color: var(--fuji-teal); text-align: center; letter-spacing: 1px; }
@@ -141,6 +151,10 @@
         .btn-sec { background: #f0f0f0; color: #555; }
         .page { display: none; }
         .page.active { display: block; }
+
+        /* --- 5. CUSTOM CONFIRM MODAL --- */
+        #confirmModal .modal-card { text-align: center; }
+        .conf-msg { font-size: 16px; font-weight: 800; color: #333; margin-bottom: 20px; }
     </style>
 </head>
 <body>
@@ -168,7 +182,7 @@
                 <div class="hotel-name">🏨 Loading Hotel...</div>
             </div>
         </div>
-        <div class="timeline-block snow-topper"><div class="time-axis" id="timeAxis"></div><div class="events-area" id="eventsArea"></div></div>
+        <div class="timeline-block snow-topper" id="timelineBlock"><div class="time-axis" id="timeAxis"></div><div class="events-area" id="eventsArea"></div></div>
     </div>
 
     <div id="pg-spend" class="page">
@@ -280,12 +294,22 @@
                 <div style="font-size:11px; color:#888; margin-top:5px;">Enter the total collected cash for each currency.</div>
             </div>
 
-            <div class="btn-row"><button class="btn-sec" onclick="closeModal()">Cancel</button><button class="btn-primary" style="background:var(--fuji-red)" onclick="doDelete()" id="btnDel">Delete</button><button class="btn-primary" onclick="doSave()">Save</button></div>
+            <div class="btn-row"><button class="btn-sec" onclick="closeModal()">Cancel</button><button class="btn-primary" style="background:var(--fuji-red)" onclick="confirmDelete()" id="btnDel">Delete</button><button class="btn-primary" onclick="doSave()">Save</button></div>
+        </div>
+    </div>
+
+    <div class="modal" id="confirmModal">
+        <div class="modal-card">
+            <h3 style="margin-top:0; color:var(--fuji-red);">Confirmation</h3>
+            <div class="conf-msg">Are you sure you want to delete this item?</div>
+            <div class="btn-row">
+                <button class="btn-sec" onclick="closeConfirmModal()">No, Keep it</button>
+                <button class="btn-primary" style="background:var(--fuji-red)" onclick="executeDelete()">Yes, Delete</button>
+            </div>
         </div>
     </div>
 
     <script>
-        // --- FIREBASE CONFIG ---
         const firebaseConfig = {
           apiKey: "AIzaSyCywE_gs1H7-lw21_52hFwpT8mPjLS_8i8",
           authDomain: "hokkaido2026-5ad8b.firebaseapp.com",
@@ -298,7 +322,6 @@
         
         let RATE = 0.053; 
         
-        // --- 2. UPDATED HOTEL INFO ---
         const HOTEL_INFO = {
             "2026-01-08": { name: "多米PREMIUM酒店-小樽天然溫泉", code: "3 Chome-9-1 Inaho, 047-0032 小樽市" },
             "2026-01-09": { name: "札幌大通公園景觀酒店", code: "Odori Nishi 8-chome, 060-0042 札幌市" },
@@ -327,33 +350,20 @@
         const PACK_CATEGORIES = ["Personal ID", "Snowboard Gear", "Defeat Cold Items", "Gadgets", "Other"];
         const CAT_COLORS = {'Food':'#FF9500', 'Transport':'#5856D6', 'Hotel':'#FF2D55', 'Attractions':'#AF52DE', 'Shopping':'#30B0C7', 'Other':'#888'};
 
-        // --- 1. FULL SCHEDULE INSERTED ---
         const rawSch = [
-            // 8 Jan
             ["2026-01-08", "05:30", "06:30", "出發機場🛫", "HK Home"], ["2026-01-08", "06:30", "09:00", "到機場🛫", "HKG"], ["2026-01-08", "09:00", "15:30", "HB008 HKG - CTS ✈️", "Flight"], ["2026-01-08", "15:30", "16:30", "攞行李🧳", "CTS"], ["2026-01-08", "16:30", "17:30", "攞車🚗", "CTS"], ["2026-01-08", "17:30", "19:00", "開車到小樽🫙", "Drive"], ["2026-01-08", "19:00", "20:00", "晚餐 (政壽司🍣)", "Otaru"], ["2026-01-08", "20:00", "21:00", "check in酒店", "Otaru"], ["2026-01-08", "21:00", "22:00", "天狗山夜景🌛", "Tenguyama"],
-            // 9 Jan
             ["2026-01-09", "08:00", "12:30", "拍照📷", "Otaru Canal"], ["2026-01-09", "12:30", "14:00", "午餐🍱", "Otaru"], ["2026-01-09", "14:00", "18:00", "小樽9逛🛍️", "Sakaimachi"], ["2026-01-09", "18:00", "19:30", "開車到札幌", "Drive"], ["2026-01-09", "19:30", "21:00", "晚餐 (牛乃家🍜)", "Sapporo"], ["2026-01-09", "21:00", "22:00", "check in & 休息", "Sapporo"],
-            // 10 Jan
             ["2026-01-10", "09:30", "12:30", "白之戀人博物館🍪", "Sapporo"], ["2026-01-10", "12:30", "14:30", "午餐(蟹遊亭🦀)", "Sapporo"], ["2026-01-10", "15:00", "17:30", "札幌啤酒博物館🍺", "Sapporo"], ["2026-01-10", "19:00", "21:00", "晚餐(冰雪之門🦀)", "Sapporo"],
-            // 11 Jan
             ["2026-01-11", "09:00", "11:30", "開車到富良野🚗", "Drive"], ["2026-01-11", "12:30", "14:00", "午餐🍱", "Furano"], ["2026-01-11", "14:30", "17:30", "學滑雪 & 適應雪場⛷️", "Furano Ski"], ["2026-01-11", "18:00", "19:30", "精靈露台🧚‍♀️", "Ningle Terrace"], ["2026-01-11", "19:30", "21:00", "晚餐🥘", "Furano"],
-            // 12 Jan
             ["2026-01-12", "09:00", "17:00", "滑雪⛷️", "Furano Ski"], ["2026-01-12", "18:00", "19:00", "晚餐🥘", "Furano"],
-            // 13 Jan
             ["2026-01-13", "08:30", "09:30", "開車到美瑛🚗", "Drive"], ["2026-01-13", "09:30", "10:30", "聖誕樹🎄", "Biei"], ["2026-01-13", "10:30", "11:30", "Mild Seven Hills🌲", "Biei"], ["2026-01-13", "11:30", "13:30", "美瑛の森 KONON", "Cafe"], ["2026-01-13", "13:30", "14:30", "四季彩之丘🌸", "Biei"], ["2026-01-13", "14:30", "15:30", "清池/瀑布💧", "Blue Pond"], ["2026-01-13", "16:30", "17:30", "旭川 (Check in)", "Asahikawa"], ["2026-01-13", "18:00", "20:00", "晚餐(成吉思汗大黑屋)🥩", "Asahikawa"],
-            // 14 Jan
             ["2026-01-14", "09:30", "12:00", "旭川動物園🐧", "Asahiyama"], ["2026-01-14", "12:00", "16:00", "去阿寒湖🚗", "Drive"], ["2026-01-14", "16:30", "23:00", "溫泉旅館休息 & 嘆♨️", "La Vista"],
-            // 15 Jan
             ["2026-01-15", "09:30", "16:00", "阿寒湖 (Activity)❄️", "Lake Akan"], ["2026-01-15", "16:30", "23:00", "溫泉旅館休息 & 嘆♨️", "La Vista"],
-            // 16 Jan
             ["2026-01-16", "10:00", "10:30", "check out酒店", "Akan"], ["2026-01-16", "10:30", "13:00", "出發去厚岸🚗", "Drive"], ["2026-01-16", "13:00", "14:30", "🦪蠔 (厚岸蠔)", "Akkeshi"], ["2026-01-16", "14:30", "16:00", "影日落🌅", "Kushiro"], ["2026-01-16", "16:00", "17:30", "出發川路", "Drive"], ["2026-01-16", "17:30", "19:00", "晚餐🥘", "Kushiro"],
-            // 17 Jan
             ["2026-01-17", "09:00", "13:00", "開去札幌🚗", "Drive"], ["2026-01-17", "13:00", "14:30", "午餐🍱", "Sapporo"], ["2026-01-17", "16:00", "20:00", "札幌 City / Shopping🛍️", "Sapporo"], ["2026-01-17", "20:00", "21:30", "晚餐🥘", "Sapporo"],
-            // 18 Jan
             ["2026-01-18", "09:00", "13:00", "開去機場🚗", "Drive"], ["2026-01-18", "13:00", "14:00", "還車🚗（成田機場?)", "Rental"], ["2026-01-18", "16:00", "21:00", "HB008 HKG - CTS ✈️", "Flight"]
         ];
 
-        // --- 2. EXPENSES PRE-FILLED WITH HOTEL INFO ---
         const rawExp = [
             { id:1, item:"Hotel: 多米PREMIUM酒店 (Otaru)", amount:1327.36, curr:"HKD", payer:"Cho", cat:"Hotel", type:"Group", method:"Credit Card" },
             { id:2, item:"Hotel: 札幌大通公園景觀酒店 (2N)", amount:2449.40, curr:"HKD", payer:"Cho", cat:"Hotel", type:"Group", method:"Credit Card" },
@@ -364,15 +374,11 @@
             { id:7, item:"Hotel: 札幌王子酒店", amount:2235.14, curr:"HKD", payer:"Cho", cat:"Hotel", type:"Group", method:"Credit Card" }
         ];
 
-        // --- 5. UPDATED PACKING LIST (SNOW TRIP) ---
         const DEFAULT_PACK = [
-            // Personal ID
             {id:1, cat:"Personal ID", text:"Passport 🛂", checks:{Cho:false,Dan:false,Diaz:false,Skye:false}},
             {id:2, cat:"Personal ID", text:"Driving License (Intl) 🚗", checks:{Cho:false,Dan:false,Diaz:false,Skye:false}},
             {id:3, cat:"Personal ID", text:"Credit Cards / Cash 💴", checks:{Cho:false,Dan:false,Diaz:false,Skye:false}},
             {id:4, cat:"Personal ID", text:"Insurance Policy 🏥", checks:{Cho:false,Dan:false,Diaz:false,Skye:false}},
-            
-            // Snowboard Gear
             {id:5, cat:"Snowboard Gear", text:"Snowboard 🏂", checks:{Cho:false,Dan:false,Diaz:false,Skye:false}},
             {id:6, cat:"Snowboard Gear", text:"Boots 👢", checks:{Cho:false,Dan:false,Diaz:false,Skye:false}},
             {id:7, cat:"Snowboard Gear", text:"Bindings", checks:{Cho:false,Dan:false,Diaz:false,Skye:false}},
@@ -381,21 +387,15 @@
             {id:10, cat:"Snowboard Gear", text:"Gloves (Waterproof) 🧤", checks:{Cho:false,Dan:false,Diaz:false,Skye:false}},
             {id:11, cat:"Snowboard Gear", text:"Impact Shorts / Knee Pads", checks:{Cho:false,Dan:false,Diaz:false,Skye:false}},
             {id:12, cat:"Snowboard Gear", text:"Balaclava / Neck Warmer 🧣", checks:{Cho:false,Dan:false,Diaz:false,Skye:false}},
-            
-            // Defeat Cold
             {id:13, cat:"Defeat Cold Items", text:"Base Layer (Top/Bottom) 👕", checks:{Cho:false,Dan:false,Diaz:false,Skye:false}},
             {id:14, cat:"Defeat Cold Items", text:"Mid Layer (Fleece/Down) 🧥", checks:{Cho:false,Dan:false,Diaz:false,Skye:false}},
             {id:15, cat:"Defeat Cold Items", text:"Snow Socks (Thick) 🧦", checks:{Cho:false,Dan:false,Diaz:false,Skye:false}},
             {id:16, cat:"Defeat Cold Items", text:"Heat Packs (Hand/Toe) 🔥", checks:{Cho:false,Dan:false,Diaz:false,Skye:false}},
             {id:17, cat:"Defeat Cold Items", text:"Beanie / Hat 🧢", checks:{Cho:false,Dan:false,Diaz:false,Skye:false}},
-
-            // Gadgets
             {id:18, cat:"Gadgets", text:"Power Bank 🔋", checks:{Cho:false,Dan:false,Diaz:false,Skye:false}},
             {id:19, cat:"Gadgets", text:"Travel Adapter 🔌", checks:{Cho:false,Dan:false,Diaz:false,Skye:false}},
             {id:20, cat:"Gadgets", text:"Sim Card / Roaming", checks:{Cho:false,Dan:false,Diaz:false,Skye:false}},
             {id:21, cat:"Gadgets", text:"GoPro / Camera 📷", checks:{Cho:false,Dan:false,Diaz:false,Skye:false}},
-
-            // Other
             {id:22, cat:"Other", text:"Skin Care (Moisturizer) 🧴", checks:{Cho:false,Dan:false,Diaz:false,Skye:false}},
             {id:23, cat:"Other", text:"Lip Balm (SPF) 💄", checks:{Cho:false,Dan:false,Diaz:false,Skye:false}},
             {id:24, cat:"Other", text:"Painkillers / Meds 💊", checks:{Cho:false,Dan:false,Diaz:false,Skye:false}},
@@ -416,7 +416,7 @@
         function initApp() {
             firebase.initializeApp(firebaseConfig);
             const db = firebase.database();
-            dbRef = db.ref('hokkaido_v25_retouch'); 
+            dbRef = db.ref('hokkaido_v25_refine_2'); 
             
             dbRef.on('value', (snapshot) => {
                 const val = snapshot.val();
@@ -428,6 +428,8 @@
                 }
             });
             fetchCurrency();
+            // INIT SWIPE LISTENER
+            initSwipe();
         }
 
         async function fetchCurrency() {
@@ -449,6 +451,37 @@
         const fmtMoney=(n)=>n.toLocaleString('en-US',{minimumFractionDigits:1,maximumFractionDigits:1});
         const SLOT_HEIGHT=60;
 
+        // --- 1. SWIPE LOGIC ---
+        function initSwipe(){
+            const el = document.getElementById('timelineBlock');
+            let startX = 0;
+            el.addEventListener('touchstart', e => { startX = e.changedTouches[0].screenX; }, false);
+            el.addEventListener('touchend', e => {
+                let endX = e.changedTouches[0].screenX;
+                handleSwipe(startX, endX);
+            }, false);
+        }
+
+        function handleSwipe(start, end){
+            const threshold = 50; 
+            if(end < start - threshold) changeDate(1); // Swipe Left -> Next Day
+            else if(end > start + threshold) changeDate(-1); // Swipe Right -> Prev Day
+        }
+
+        function changeDate(offset){
+            const dates = [];
+            for(let i=8;i<=18;i++){ dates.push(`2026-01-${i<10?'0'+i:i}`); }
+            const idx = dates.indexOf(appData.currDate);
+            if(idx !== -1){
+                const newIdx = idx + offset;
+                if(newIdx >= 0 && newIdx < dates.length){
+                    appData.currDate = dates[newIdx];
+                    closeMap();
+                    refresh();
+                }
+            }
+        }
+
         function refresh(){
             renderDates();
             renderTimeline();
@@ -467,7 +500,6 @@
             } else {
                 document.getElementById('hotelBar').innerHTML = '<div>🏨 No Hotel</div>';
             }
-            
             fetchWeather(appData.currDate);
         }
 
@@ -477,10 +509,8 @@
                 const mainItem = dailySched.find(e => e.start > "10:00" && e.start < "18:00") || dailySched[0];
                 document.getElementById('dashLoc').innerText = mainItem.loc;
                 document.getElementById('dashHighlight').innerText = "📍 " + mainItem.title;
-                
                 const searchQ = mainItem.loc + " Hokkaido";
                 document.getElementById('dashMapFrame').src=`https://maps.google.com/maps?q=${encodeURIComponent(searchQ)}&t=&z=13&ie=UTF8&iwloc=&output=embed`;
-                
                 const btn = document.getElementById('mapBtn');
                 btn.href = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(mainItem.loc + " Hokkaido")}`;
                 btn.innerText = "📍 Navigate Here";
@@ -504,8 +534,6 @@
         function renderTimeline(){
             const ax=document.getElementById('timeAxis'), ar=document.getElementById('eventsArea');
             ax.innerHTML='';ar.innerHTML='';
-            
-            // NOW LINE LOGIC
             const now = new Date();
             const y = now.getFullYear();
             const m = String(now.getMonth() + 1).padStart(2, '0');
@@ -531,7 +559,6 @@
                     }
                 });
             }
-            
             if(appData.currDate === todayStr) {
                 const curH = now.getHours();
                 const curM = now.getMinutes();
@@ -568,8 +595,8 @@
                         if(pb[e.payer]!==undefined) pb[e.payer]+=vHKD; 
                     }
                     
-                    // --- 3. PIE CHART FIX: Calculate breakdown even for new items ---
-                    if(e.cat && (e.payer !== 'Pool')) { 
+                    // --- 4. PIE CHART FIX: Count ALL Categories (Pool included) ---
+                    if(e.cat) { 
                         catTotals[e.cat] = (catTotals[e.cat] || 0) + vHKD;
                     }
                 });
@@ -616,7 +643,6 @@
             h+=`</tbody></table>`; tb.innerHTML=h;
         }
 
-        // --- 3. PIE CHART FIXED LOGIC ---
         function renderPie(c,t){
             let d=0,css=[],i=0;
             const legendEl = document.getElementById('pieLegend'); legendEl.innerHTML='';
@@ -653,7 +679,7 @@
                         
                         const d = document.createElement('div');
                         d.className = 'pack-item';
-                        let html = `<div class="pack-row-top"><span>${item.text}</span><span style="color:#e74c3c;cursor:pointer;" onclick="delPack(${item.id})">×</span></div>`;
+                        let html = `<div class="pack-row-top"><span>${item.text}</span><span style="color:#e74c3c;cursor:pointer;" onclick="confirmPackDelete(${item.id})">×</span></div>`;
                         html += `<div class="pack-row-checks">`;
                         
                         PEOPLE.forEach(p => {
@@ -695,12 +721,47 @@
             }
         }
         
-        function delPack(id){
-            if(confirm('Delete this item?')){
-                appData.packList = appData.packList.filter(x => x.id !== id);
-                save();
-                renderPackList();
-            }
+        // --- 5. CUSTOM CONFIRM DELETE ---
+        let deleteCallback = null;
+        
+        function confirmDelete(){
+            if(!eId) return;
+            // Setup general delete (Spend/Plan)
+            deleteCallback = doDelete;
+            document.getElementById('confirmModal').classList.add('open');
+        }
+
+        function confirmPackDelete(id){
+            // Setup pack item delete
+            eId = id; // reuse eId for this
+            deleteCallback = () => {
+                 appData.packList = appData.packList.filter(x => x.id !== id);
+                 save();
+                 renderPackList();
+                 closeConfirmModal();
+                 eId = null;
+            };
+            document.getElementById('confirmModal').classList.add('open');
+        }
+
+        function executeDelete(){
+            if(deleteCallback) deleteCallback();
+            closeConfirmModal();
+        }
+
+        function closeConfirmModal(){
+            document.getElementById('confirmModal').classList.remove('open');
+            deleteCallback = null;
+        }
+
+        function doDelete(){
+            const m=document.getElementById('mMode').value;
+            if(m==='plan') appData.schedule=appData.schedule.filter(x=>x.id!==eId);
+            else appData.expenses=appData.expenses.filter(x=>x.id!==eId);
+            save();
+            refresh();
+            closeModal();
+            closeConfirmModal();
         }
 
         function showMap(l){
@@ -725,7 +786,6 @@
             const btn = document.getElementById('mapBtn');
             btn.innerText = "🗺️ Open Full Map";
             btn.classList.remove('nav-mode');
-            // --- 6. RESTORE MAP LINK ---
             btn.href = "https://maps.app.goo.gl/C7BTdCcFGdUTAscw5";
         }
         
@@ -814,19 +874,10 @@
             closeModal();
         }
         
-        function doDelete(){
-            if(eId && confirm('Delete?')){
-                const m=document.getElementById('mMode').value;
-                if(m==='plan') appData.schedule=appData.schedule.filter(x=>x.id!==eId);
-                else appData.expenses=appData.expenses.filter(x=>x.id!==eId);
-                save();
-                refresh();
-                closeModal();
-            }
-        }
-        
         function clickAdd(){
             const p=document.querySelector('.page.active').id;
+            // --- 3. PACK TAB KEYWORD REMOVED ---
+            // Just focus input on click
             if(p==='pg-pack') {
                 document.getElementById('newPackItem').focus();
             }
@@ -840,7 +891,7 @@
             event.currentTarget.classList.add('active');
             
             const fab = document.getElementById('mainFab');
-            if(p === 'pack') fab.innerHTML = '⌨️'; 
+            if(p === 'pack') fab.innerHTML = '+'; 
             else fab.innerHTML = '+';
         }
         

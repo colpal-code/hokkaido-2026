@@ -46,20 +46,24 @@
         
         .glass-panel { background: var(--glass-bg); backdrop-filter: var(--glass-blur); border: var(--glass-border); box-shadow: var(--glass-shadow); border-radius: 24px; }
         
-        /* --- 1. SNOW UPPERED 1cm (Approx -25px UP from 30px) --- */
+        /* --- FINAL SNOW FIX: "Bottom-Up" Approach --- */
         .snow-topper { position: relative; overflow: visible !important; }
         .snow-topper::after {
             content: ''; 
-            position: absolute; 
-            /* Set to positive 14px to push it down onto the block */
-            top: 14px; 
-            right: 0; 
-            width: 35%; 
-            height: 45px;
+            position: absolute;
+            
+            /* KEY FIX: Align bottom of snow to top of box with slight overlap */
+            bottom: 92%; 
+            right: -2px; /* Slight right adjust to cover corner roundness */
+            
+            width: 35%; /* Slightly wider to look natural */
+            height: 50px; 
+            
             background: url('snow.png'); 
             background-repeat: no-repeat; 
-            background-position: top right;
-            background-size: 100% auto; 
+            background-position: bottom right; /* Anchors image to bottom-right of its own box */
+            background-size: contain; 
+            
             pointer-events: none; 
             z-index: 50;
         }
@@ -115,7 +119,6 @@
         .exp-group-title { margin: 15px 15px 8px 15px; font-size: 13px; font-weight: 800; color: var(--fuji-teal); opacity: 0.8; letter-spacing: 0.5px; border-bottom: 2px solid rgba(42, 75, 85, 0.1); padding-bottom: 4px; }
         .exp-block { padding: 14px; margin: 0 15px 8px 15px; display: flex; justify-content: space-between; align-items: center; position: relative; background: rgba(255,255,255,0.9); backdrop-filter: blur(10px); border-radius: 16px; box-shadow: 0 4px 8px rgba(0,0,0,0.05); }
         
-        /* --- 2. EXPENSE ALIGNMENT FIX --- */
         .exp-left { flex: 1; }
         .exp-right { text-align: right; min-width: 80px; margin-left: auto; }
         
@@ -437,7 +440,7 @@
         function initApp() {
             firebase.initializeApp(firebaseConfig);
             const db = firebase.database();
-            dbRef = db.ref('hokkaido_v25_refine_4'); 
+            dbRef = db.ref('hokkaido_v25_refine_5'); 
             
             dbRef.on('value', (snapshot) => {
                 const val = snapshot.val();
@@ -938,10 +941,3 @@
     </script>
 </body>
 </html>
-
-
-
-
-
-
-

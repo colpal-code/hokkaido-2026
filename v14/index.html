@@ -7,7 +7,7 @@
     <link rel="apple-touch-icon" href="icon.png">
     <link rel="icon" type="image/png" href="icon.png">
     
-    <title>Hokkaido V26</title>
+    <title>Hokkaido V27</title>
     <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700;800&display=swap" rel="stylesheet">
     
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
@@ -27,24 +27,25 @@
         
         .glass-panel { background: var(--glass-bg); backdrop-filter: var(--glass-blur); border: var(--glass-border); box-shadow: var(--glass-shadow); border-radius: 24px; }
         
-        /* --- REVISED SNOW TOPPER CSS (V26 - Perfect Fit) --- */
+        /* --- SNOW CORNER STYLE (V27) --- */
         .snow-topper { position: relative; overflow: visible !important; }
         .snow-topper::after {
             content: ''; 
             position: absolute;
-            /* Positioned to sit exactly on top border */
+            /* Snug on top edge */
             top: -12px; 
-            left: 0; right: 0; 
-            height: 25px; /* Fixed height for the snow cap */
+            /* Left Corner Only */
+            left: -5px;
+            width: 120px; /* Fixed width for corner accent */
+            height: 40px;
             background: url('snow.png');
-            /* Shows once, stretches horizontally to fit width exactly */
             background-repeat: no-repeat;
-            background-position: center bottom;
-            background-size: 100% 100%; 
+            background-position: top left;
+            background-size: contain; 
             pointer-events: none; 
             z-index: 50;
         }
-        /* ------------------------------------ */
+        /* ------------------------------- */
 
         .app-header { position: sticky; top: 10px; z-index: 1000; margin: 0 15px 15px 15px; padding: 15px; text-align: center; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(15px); border-radius: 16px; box-shadow: var(--glass-shadow); }
         .app-title { font-size: 17px; font-weight: 800; color: var(--fuji-teal); letter-spacing: 0.5px; }
@@ -107,7 +108,7 @@
         .pool-label { font-weight: bold; color: #666; margin-right: 10px; }
         .pool-val { font-weight: 800; color: var(--fuji-teal); font-size: 13px; }
         .pool-rem { color: var(--fuji-red); }
-        /* Narrow edit button */
+        /* Pool edit button */
         .btn-pool-edit { padding: 4px 8px; font-size: 11px; white-space: nowrap; border-radius: 10px; background: #eee; color: #555; border: none; font-weight: 800; width: auto; }
 
         .settle-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 12px; }
@@ -277,7 +278,7 @@
     </div>
 
     <script>
-        // --- FIREBASE CONFIG (V26) ---
+        // --- FIREBASE CONFIG (V27) ---
         const firebaseConfig = {
           apiKey: "AIzaSyCywE_gs1H7-lw21_52hFwpT8mPjLS_8i8",
           authDomain: "hokkaido2026-5ad8b.firebaseapp.com",
@@ -311,6 +312,13 @@
             "2026-01-14": { lat: 43.77, lon: 142.36 }, "2026-01-15": { lat: 43.43, lon: 144.09 },
             "2026-01-16": { lat: 42.98, lon: 144.38 }, "2026-01-17": { lat: 43.06, lon: 141.35 },
             "2026-01-18": { lat: 43.06, lon: 141.35 }
+        };
+
+        const DAILY_HIGHLIGHTS = {
+            "2026-01-08": "Otaru Arrival 🍣", "2026-01-09": "Otaru Canal 📷", "2026-01-10": "Shiroi Koibito 🍪", 
+            "2026-01-11": "Ningle Terrace 🧚‍♀️", "2026-01-12": "Skiing Day ⛷️", "2026-01-13": "Biei Trees 🌲",
+            "2026-01-14": "Asahiyama Zoo 🐧", "2026-01-15": "Lake Akan Activity ❄️", "2026-01-16": "Kushiro Sunset 🌅", 
+            "2026-01-17": "Shopping Day 🛍️", "2026-01-18": "Flight Home ✈️"
         };
 
         const PEOPLE=['Cho','Dan','Diaz','Skye'];
@@ -357,29 +365,26 @@
             {id:12, cat:"Gadgets", text:"Travel Adapter", checks:{Cho:false,Dan:false,Diaz:false,Skye:false}}
         ];
         
-        // V26 Data Structure
         let appData = { 
             currDate:"2026-01-08", 
             schedule: rawSch.map((s,i)=>({id:i,date:s[0],start:s[1],end:s[2],title:s[3],loc:s[4]})), 
             expenses: rawExp, 
             packList: DEFAULT_PACK,
-            // NEW: Dual currency pool tracking
             poolData: { HKD: 0, JPY: 0 }
         };
         
         let dbRef = null;
 
-        // --- INIT SYNC (V26) ---
+        // --- INIT SYNC (V27) ---
         function initApp() {
             firebase.initializeApp(firebaseConfig);
             const db = firebase.database();
-            dbRef = db.ref('hokkaido_v26_final'); 
+            dbRef = db.ref('hokkaido_v27_final'); 
             
             dbRef.on('value', (snapshot) => {
                 const val = snapshot.val();
                 if (val) {
                     appData = val;
-                    // Ensure poolData structure exists if loading old data
                     if(!appData.poolData) appData.poolData = { HKD: 0, JPY: 0 };
                     refresh();
                 } else {
@@ -485,11 +490,9 @@
         }
         function addSun(c,t,i){const h=parseInt(t.split(':')[0]),m=parseInt(t.split(':')[1]);const mn=(h-5)*60+m;const tp=(mn/60)*SLOT_HEIGHT;if(tp>0){const d=document.createElement('div');d.className='sun-marker-axis';d.style.top=tp+'px';d.innerHTML=`<div class="sun-text-axis">${i} ${t}</div>`;c.appendChild(d);}}
 
-        // --- NEW POOL EDIT LOGIC (V26) ---
+        // --- NEW POOL EDIT LOGIC (V27 MODAL) ---
         function editPool(){
-            // Open the new modal section
             openModal('pool', null);
-            // Pre-fill existing values
             document.getElementById('poolHkdInput').value = appData.poolData.HKD || '';
             document.getElementById('poolJpyInput').value = appData.poolData.JPY || '';
         }
@@ -498,17 +501,14 @@
             const l=document.getElementById('expenseList');l.innerHTML='';
             let tg=0; let pb={'Cho':0,'Dan':0,'Diaz':0,'Skye':0}; let catTotals={};
             
-            // Track Pool Spending separately per currency
             let poolSpentHKD = 0;
             let poolSpentJPY = 0;
 
-            // 1. Calculate All Totals
             if(appData.expenses) {
                 appData.expenses.forEach(e=>{
-                    // Value in HKD for charts/stats
                     let vHKD = e.curr==='JPY' ? e.amount*RATE : e.amount;
                     
-                    // POOL CALC (Dual Currency Bucket)
+                    // POOL CALC
                     if(e.payer === 'Pool'){
                         if(e.curr === 'HKD') poolSpentHKD += e.amount;
                         if(e.curr === 'JPY') poolSpentJPY += e.amount;
@@ -518,7 +518,6 @@
                         if(pb[e.payer]!==undefined) pb[e.payer]+=vHKD; 
                     }
                     
-                    // PIE CHART (Uses HKD equivalent for everything)
                     if(e.cat) {
                         catTotals[e.cat] = (catTotals[e.cat] || 0) + vHKD;
                     }
@@ -552,7 +551,6 @@
                 }
             });
             
-            // Total Spend Chart uses HKD equivalent of everything
             let totalPoolSpentInHKDBase = poolSpentHKD + (poolSpentJPY * RATE);
             document.getElementById('totalSpend').innerText=fmtMoney(tg + totalPoolSpentInHKDBase); 
             renderPie(catTotals, (tg + totalPoolSpentInHKDBase)); 
@@ -610,7 +608,7 @@
         function editEvent(e,id){e.stopPropagation();openModal('plan',appData.schedule.find(x=>x.id===id));}
         function editExp(id){openModal('spend',appData.expenses.find(x=>x.id===id));}
         
-        // UPDATED OPEN MODAL to handle 'pool' mode
+        // MODAL LOGIC (Handles POOL MODE)
         function openModal(m,d){
             document.getElementById('modal').classList.add('open');
             document.getElementById('mMode').value=m;
@@ -622,7 +620,7 @@
             
             if(m==='pool'){
                  document.getElementById('fPool').style.display='block';
-                 document.getElementById('mTitle').innerText=''; // Title is inside the section
+                 document.getElementById('mTitle').innerText=''; 
             } else {
                 document.getElementById('fPlan').style.display=m==='plan'?'block':'none';
                 document.getElementById('fSpend').style.display=m==='spend'?'block':'none';
@@ -638,11 +636,9 @@
         }
         function closeModal(){document.getElementById('modal').classList.remove('open');}
         
-        // UPDATED SAVE FUNCTION to handle 'pool' mode
         function doSave(){
             const m=document.getElementById('mMode').value;
             if(m==='pool'){
-                // Save Pool Data directly
                 appData.poolData.HKD = parseFloat(document.getElementById('poolHkdInput').value) || 0;
                 appData.poolData.JPY = parseFloat(document.getElementById('poolJpyInput').value) || 0;
             } else if(m==='plan'){

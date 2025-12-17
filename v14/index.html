@@ -24,10 +24,11 @@
         }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'M PLUS Rounded 1c', sans-serif !important; }
         
+        /* --- 1. SCROLL FIX: PREVENT OVERSCROLL/BOUNCE --- */
         html {
             width: 100%;
             height: 100%;
-            overscroll-behavior: none; 
+            overscroll-behavior: none; /* Stops rubber-banding */
         }
         body {
             margin: 0;
@@ -36,6 +37,7 @@
             min-height: 100vh;
             color: var(--text-dark); 
             padding-bottom: 110px; 
+            overscroll-behavior: none; /* Reinforced here */
             overflow-x: hidden; 
             overflow-y: auto;
             -webkit-overflow-scrolling: touch;
@@ -46,24 +48,20 @@
         
         .glass-panel { background: var(--glass-bg); backdrop-filter: var(--glass-blur); border: var(--glass-border); box-shadow: var(--glass-shadow); border-radius: 24px; }
         
-        /* --- FINAL SNOW FIX: "Bottom-Up" Approach --- */
+        /* --- 2. SNOW MOVED UP (~0.6cm higher) --- */
         .snow-topper { position: relative; overflow: visible !important; }
         .snow-topper::after {
             content: ''; 
-            position: absolute;
-            
-            /* KEY FIX: Align bottom of snow to top of box with slight overlap */
-            bottom: 92%; 
-            right: -2px; /* Slight right adjust to cover corner roundness */
-            
-            width: 35%; /* Slightly wider to look natural */
-            height: 50px; 
-            
+            position: absolute; 
+            /* Changed from 12px to -20px to move it UP */
+            top: -20px; 
+            right: 0; 
+            width: 35%; 
+            height: 50px;
             background: url('snow.png'); 
             background-repeat: no-repeat; 
-            background-position: bottom right; /* Anchors image to bottom-right of its own box */
-            background-size: contain; 
-            
+            background-position: top right;
+            background-size: 100% auto; 
             pointer-events: none; 
             z-index: 50;
         }
@@ -110,7 +108,20 @@
         .now-line::before { content: 'NOW'; position: absolute; left: -50px; top: -8px; width: 45px; text-align:right; color: var(--fuji-red); font-size: 10px; font-weight: 800; }
         .now-line::after { content: ''; position: absolute; left: -4px; top: -3px; width: 8px; height: 8px; background: var(--fuji-red); border-radius: 50%; }
 
-        .t-event { position: absolute; left: 10px; right: 15px; background: rgba(244, 242, 233, 0.95); border-radius: 12px; padding: 6px 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.08); z-index: 10; cursor: pointer; border: 1px solid rgba(0,0,0,0.05); }
+        /* --- 3. SCHEDULE BLOCKS: REMOVE WHITE SHADOWS --- */
+        .t-event { 
+            position: absolute; 
+            left: 10px; right: 15px; 
+            background: rgba(244, 242, 233, 0.95); 
+            border-radius: 12px; 
+            padding: 6px 10px; 
+            /* Removed white box-shadow and border */
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08); 
+            z-index: 10; 
+            cursor: pointer; 
+            border: none; 
+        }
+        
         .t-title { font-weight: 800; font-size: 13px; color: var(--fuji-teal); margin-bottom: 2px; line-height: 1.1; }
         .t-loc { font-size: 10px; color: #666; }
         .card-edit-btn { position: absolute; top: 5px; right: 5px; width: 24px; height: 24px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; color: var(--fuji-teal); cursor: pointer; z-index: 20; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
@@ -440,7 +451,7 @@
         function initApp() {
             firebase.initializeApp(firebaseConfig);
             const db = firebase.database();
-            dbRef = db.ref('hokkaido_v25_refine_5'); 
+            dbRef = db.ref('hokkaido_v25_refine_6'); 
             
             dbRef.on('value', (snapshot) => {
                 const val = snapshot.val();

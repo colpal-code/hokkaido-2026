@@ -255,4 +255,228 @@
             ["2026-01-15","07:00","09:00","起身 / 早餐 🥣","Akan"], ["2026-01-15","09:30","16:00","阿寒湖 (Activity) ❄️","Lake Akan"], ["2026-01-15","16:30","23:00","溫泉旅館休息 & 嘆 ♨️","La Vista"],
             ["2026-01-16","07:00","09:00","起身 / 早餐 🥣","Akan"], ["2026-01-16","10:00","10:30","Check out 🏨","Akan"], ["2026-01-16","10:30","13:00","出發去厚岸 🚗","Drive"], ["2026-01-16","13:00","14:30","🦪蠔 (厚岸蠔)","Akkeshi"], ["2026-01-16","14:30","16:00","影日落 🌅","Kushiro"], ["2026-01-16","16:00","17:30","出發川路 / Check in","Kushiro"], ["2026-01-16","17:30","19:00","晚餐 🥘","Kushiro"],
             ["2026-01-17","07:00","09:00","起身 / 早餐 🥣","Kushiro"], ["2026-01-17","09:00","13:00","開去札幌 🚗","Drive"], ["2026-01-17","13:00","14:30","午餐 🍱","Sapporo"], ["2026-01-17","16:00","20:00","札幌 City / Shopping 🛍️","Sapporo"], ["2026-01-17","20:00","21:30","晚餐 🥘","Sapporo"],
-            ["2026-01-18
+            ["2026-01-18","08:00","09:00","早餐 🥣","Sapporo"], ["2026-01-18","09:00","13:00","開去機場 🚗","Drive"], ["2026-01-18","13:00","14:00","還車🚗（成田機場? CTS)","CTS Rental"], ["2026-01-18","14:00","16:00","機場 Checkin","CTS"], ["2026-01-18","16:00","21:00","HB008 HKG - CTS ✈️","Flight"], ["2026-01-18","21:30","22:30","返屋企 🏠","HK"]
+        ];
+        const rawExp=[
+            { id:1, item:"Hotel: Otaru", amount:1327, curr:"HKD", payer:"Rachel", cat:"Hotel", type:"Group", method:"Credit Card" },
+            { id:2, item:"Hotel: Sapporo", amount:2449, curr:"HKD", payer:"Rachel", cat:"Hotel", type:"Group", method:"Credit Card" },
+            { id:3, item:"Hotel: Furano", amount:6551, curr:"HKD", payer:"Rachel", cat:"Hotel", type:"Group", method:"Credit Card" },
+            { id:4, item:"Hotel: Asahikawa", amount:918, curr:"HKD", payer:"Rachel", cat:"Hotel", type:"Group", method:"Credit Card" },
+            { id:5, item:"Hotel: Akan", amount:867, curr:"HKD", payer:"Rachel", cat:"Hotel", type:"Group", method:"Credit Card" },
+            { id:6, item:"Hotel: Kushiro", amount:867, curr:"HKD", payer:"Rachel", cat:"Hotel", type:"Group", method:"Credit Card" },
+            { id:7, item:"Hotel: Sapporo", amount:2235, curr:"HKD", payer:"Rachel", cat:"Hotel", type:"Group", method:"Credit Card" }
+        ];
+        
+        let appData = { currDate:"2026-01-08", schedule:rawSch.map((s,i)=>({id:i,date:s[0],start:s[1],end:s[2],title:s[3],loc:s[4]})), expenses:rawExp, packList:[{id:1,text:"Passport",checks:{'Diaz':false,'Rachel':false,'Skye':false,'Daniel':false}}] };
+        let dbRef = null;
+
+        // --- INIT SYNC ---
+        function initApp() {
+            firebase.initializeApp(firebaseConfig);
+            const db = firebase.database();
+            // USING FULL DATASET V17
+            dbRef = db.ref('hokkaido_v17_full');
+            
+            dbRef.on('value', (snapshot) => {
+                const val = snapshot.val();
+                if (val) {
+                    appData = val; 
+                    refresh();
+                } else {
+                    save();
+                }
+            });
+        }
+
+        function save() {
+            if (dbRef) dbRef.set(appData);
+        }
+
+        const fmtMoney=(n)=>n.toLocaleString('en-US',{minimumFractionDigits:1,maximumFractionDigits:1});
+        const SLOT_HEIGHT=70;
+
+        function refresh(){
+            renderDates();
+            renderTimeline();
+            renderExpenses(); // Now grouped!
+            renderPackList();
+            
+            // HOTEL BAR FIX (Map Link)
+            const h = HOTEL_INFO[appData.currDate];
+            if (h) {
+                const mapLink = h.code !== 'N/A' ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(h.name)}` : '#';
+                document.getElementById('hotelBar').innerHTML = `
+                    <div class="hotel-name">🏨 ${h.name}</div>
+                    <a href="${mapLink}" target="_blank" class="hotel-map-link">Map Code: ${h.code} ↗</a>
+                `;
+            } else {
+                document.getElementById('hotelBar').innerHTML = '<div>🏨 No Hotel</div>';
+            }
+            
+            // DASHBOARD FIX (Highlight)
+            document.getElementById('dashHighlight').innerText = "📍 " + (DAILY_HIGHLIGHTS[appData.currDate] || "Free Day");
+        }
+
+        function renderTimeline(){
+            const ax=document.getElementById('timeAxis'), ar=document.getElementById('eventsArea');
+            ax.innerHTML='';ar.innerHTML='';
+            for(let i=5;i<=24;i++){
+                const d=document.createElement('div');d.className='time-slot';
+                // 3. 24H TIME FIX
+                const label = `${i.toString().padStart(2, '0')}:00`;
+                d.innerHTML=`<div class="ts-label">${label}</div>`;ax.appendChild(d);
+                const li=document.createElement('div');li.className='time-slot';li.style.borderBottom='1px dashed rgba(0,0,0,0.1)';ar.appendChild(li);
+            }
+            if(appData.schedule) {
+                appData.schedule.filter(e=>e.date===appData.currDate).forEach(e=>{
+                    const sH=parseInt(e.start.split(':')[0]), sM=parseInt(e.start.split(':')[1]);
+                    const eH=parseInt(e.end.split(':')[0]), eM=parseInt(e.end.split(':')[1]);
+                    const st=(sH-5)*60+sM; const du=((eH-5)*60+eM)-st;
+                    const top=(st/60)*SLOT_HEIGHT; const h=(du/60)*SLOT_HEIGHT;
+                    if(top>=0){
+                        const el=document.createElement('div');el.className='t-event';el.style.top=(top+10)+'px';el.style.height=(h>30?h-5:35)+'px';
+                        el.innerHTML=`<div class="t-title">${e.title}</div><div class="t-loc">📍 ${e.loc}</div><div class="card-edit-btn" onclick="editEvent(event,${e.id})">✎</div>`;
+                        el.onclick=()=>showMap(e.loc);ar.appendChild(el);
+                    }
+                });
+            }
+            addSun(ax,"07:06","🌅 Sunrise");addSun(ax,"16:20","🌇 Sunset");
+        }
+        function addSun(c,t,i){const h=parseInt(t.split(':')[0]),m=parseInt(t.split(':')[1]);const mn=(h-5)*60+m;const tp=(mn/60)*SLOT_HEIGHT;if(tp>0){const d=document.createElement('div');d.className='sun-marker-axis';d.style.top=tp+'px';d.innerHTML=`<div class="sun-text-axis">${i} ${t}</div>`;c.appendChild(d);}}
+
+        // 7. GROUPED TRANSACTIONS FIX
+        function renderExpenses(){
+            const l=document.getElementById('expenseList');l.innerHTML='';
+            let tg=0; let pb={'Rachel':0,'Daniel':0,'Diaz':0,'Skye':0}; let catTotals={};
+            
+            // Initial calculation for totals
+            if(appData.expenses) {
+                appData.expenses.forEach(e=>{
+                    let v=e.curr==='JPY'?e.amount*RATE:e.amount;
+                    if(e.type==='Group'){ tg+=v; if(e.cat)catTotals[e.cat]=(catTotals[e.cat]||0)+v; if(pb[e.payer]!==undefined)pb[e.payer]+=v; }
+                });
+            }
+
+            // Render by Category
+            CATEGORIES.forEach(cat => {
+                const items = appData.expenses ? appData.expenses.filter(e => e.cat === cat) : [];
+                if (items.length > 0) {
+                    const groupTitle = document.createElement('div');
+                    groupTitle.className = 'exp-group-title';
+                    const icon = cat==='Food'?'🍔':cat==='Transport'?'🚆':cat==='Hotel'?'🏨':cat==='Attractions'?'🎡':cat==='Shopping'?'🛍️':'📦';
+                    groupTitle.innerText = `${icon} ${cat}`;
+                    l.appendChild(groupTitle);
+
+                    items.forEach(e => {
+                        const d=document.createElement('div');d.className='exp-block';
+                        d.innerHTML=`<div class="exp-left"><div class="exp-item">${e.item}<span class="exp-pay">${e.method||'-'}</span></div></div><div class="exp-right"><div class="exp-amt">$${e.curr} ${fmtMoney(e.amount)}</div><div class="exp-avg">${e.payer} Paid</div></div><div class="card-edit-btn" style="position:static;margin-left:10px;width:30px;height:30px;" onclick="editExp(${e.id})">✎</div>`;
+                        l.appendChild(d);
+                    });
+                }
+            });
+            
+            document.getElementById('totalSpend').innerText=fmtMoney(tg); 
+            renderPie(catTotals,tg); 
+            renderSettlement(tg,pb);
+        }
+
+        function renderSettlement(t,pb){
+            const tb=document.getElementById('settlementTable'); const s=t/4;
+            let h=`<table class="settle-table"><thead><tr><th>Person</th><th>Share</th><th>Paid</th><th>Bal (+Owe/-Get)</th></tr></thead><tbody>`;
+            PEOPLE.forEach(p=>{
+                const pd=pb[p]; const b=s-pd; const cl=b>0?'money-pos':'money-neg';
+                const tx=b>0?`HK$${fmtMoney(b)}`:`(HK$${fmtMoney(Math.abs(b))})`;
+                h+=`<tr><td>${p}</td><td>$${fmtMoney(s)}</td><td>$${fmtMoney(pd)}</td><td class="${cl}">${tx}</td></tr>`;
+            });
+            h+=`</tbody></table>`; tb.innerHTML=h;
+        }
+
+        // 4. PIE CHART LEGEND FIX
+        function renderPie(c,t){
+            let d=0,css=[],i=0;
+            const legendEl = document.getElementById('pieLegend'); legendEl.innerHTML='';
+            
+            for(let k in c){
+                if(c[k]>0){
+                    let p=(c[k]/t)*360;
+                    const col = CAT_COLORS[k] || '#999';
+                    css.push(`${col} ${d}deg ${d+p}deg`);
+                    d+=p;
+                    
+                    // Add Legend Item
+                    legendEl.innerHTML += `<div class="legend-item"><div class="dot" style="background:${col}"></div>${k} (${Math.round((c[k]/t)*100)}%)</div>`;
+                }
+            }
+            if(t>0)document.getElementById('poolPie').style.background=`conic-gradient(${css.join(',')})`;
+        }
+
+        function renderPackList(){const c=document.getElementById('packListContainer');c.innerHTML='';if(appData.packList)appData.packList.forEach((i,x)=>{let h='';PEOPLE.forEach(p=>{let k=i.checks[p]?'checked':'';h+=`<div style="flex:1;text-align:center;font-size:10px;color:#888;padding:5px;border:1px solid #eee;border-radius:8px;" class="${k}" onclick="togPack(${x},'${p}')"><div style="width:16px;height:16px;border:1px solid #ccc;border-radius:50%;margin:0 auto 4px;background:white;${k?'background:#fff;border:4px solid var(--fuji-teal);':''}"></div>${p}</div>`;});const d=document.createElement('div');d.className='pack-item';d.innerHTML=`<div style="display:flex;justify-content:space-between;margin-bottom:10px;"><div style="font-weight:800;color:var(--fuji-teal);">${i.text}</div><div style="color:var(--fuji-red);cursor:pointer;" onclick="delPack(${x})">×</div></div><div style="display:flex;gap:5px;">${h}</div>`;c.appendChild(d);});}
+        
+        // 5. PACK ADD FIX
+        function addPackItem(){
+            const v=document.getElementById('newPackItem').value;
+            if(v){
+                if(!appData.packList) appData.packList=[];
+                appData.packList.push({id:Date.now(),text:v,checks:{}});
+                save();
+                document.getElementById('newPackItem').value='';
+                // Force local refresh immediately for UX
+                renderPackList();
+            }
+        }
+        
+        function togPack(i,p){appData.packList[i].checks[p]=!appData.packList[i].checks[p];save();}
+        function delPack(i){if(confirm('Delete?')){appData.packList.splice(i,1);save();}}
+        function showMap(l){document.getElementById('dashInfo').style.display='none';document.getElementById('dashMapFrame').style.display='block';document.querySelector('.close-map').style.display='block';document.getElementById('dashMapFrame').src=`https://maps.google.com/maps?q=${encodeURIComponent(l+' Hokkaido')}&output=embed`;}
+        function closeMap(){document.getElementById('dashInfo').style.display='flex';document.getElementById('dashMapFrame').style.display='none';document.querySelector('.close-map').style.display='none';}
+        let eId=null;
+        function editEvent(e,id){e.stopPropagation();openModal('plan',appData.schedule.find(x=>x.id===id));}
+        function editExp(id){openModal('spend',appData.expenses.find(x=>x.id===id));}
+        function openModal(m,d){
+            document.getElementById('modal').classList.add('open');document.getElementById('mMode').value=m;
+            document.getElementById('fPlan').style.display=m==='plan'?'block':'none';document.getElementById('fSpend').style.display=m==='spend'?'block':'none';
+            if(d){eId=d.id;document.getElementById('mTitle').innerText='Edit';if(m==='plan'){document.getElementById('inpStart').value=d.start;document.getElementById('inpEnd').value=d.end;document.getElementById('inpTitle').value=d.title;document.getElementById('inpLoc').value=d.loc;}else{document.getElementById('spItem').value=d.item;document.getElementById('spAmt').value=d.amount;document.getElementById('spCurr').value=d.curr;document.getElementById('spCat').value=d.cat;document.getElementById('spPayer').value=d.payer;document.getElementById('spMethod').value=d.method||'Credit Card';document.getElementById('spType').value=d.type||'Group';}}
+            else{eId=null;document.getElementById('mTitle').innerText='Add New';}
+        }
+        function closeModal(){document.getElementById('modal').classList.remove('open');}
+        function doSave(){const m=document.getElementById('mMode').value;if(m==='plan'){const s=document.getElementById('inpStart').value,e=document.getElementById('inpEnd').value,t=document.getElementById('inpTitle').value,l=document.getElementById('inpLoc').value;if(eId){const i=appData.schedule.findIndex(x=>x.id===eId);Object.assign(appData.schedule[i],{start:s,end:e,title:t,loc:l});}else {if(!appData.schedule)appData.schedule=[];appData.schedule.push({id:Date.now(),date:appData.currDate,start:s,end:e,title:t,loc:l});}}else{const i=document.getElementById('spItem').value,a=parseFloat(document.getElementById('spAmt').value),c=document.getElementById('spCurr').value,ct=document.getElementById('spCat').value,p=document.getElementById('spPayer').value,mt=document.getElementById('spMethod').value,ty=document.getElementById('spType').value;if(eId){const ix=appData.expenses.findIndex(x=>x.id===eId);Object.assign(appData.expenses[ix],{item:i,amount:a,curr:c,cat:ct,payer:p,method:mt,type:ty});}else {if(!appData.expenses)appData.expenses=[];appData.expenses.push({id:Date.now(),item:i,amount:a,curr:c,cat:ct,payer:p,method:mt,type:ty});}}save();closeModal();}
+        function doDelete(){if(eId&&confirm('Delete?')){const m=document.getElementById('mMode').value;if(m==='plan')appData.schedule=appData.schedule.filter(x=>x.id!==eId);else appData.expenses=appData.expenses.filter(x=>x.id!==eId);save();closeModal();}}
+        
+        function clickAdd(){
+            const p=document.querySelector('.page.active').id;
+            if(p==='pg-pack') return;
+            else openModal(p==='pg-plan'?'plan':'spend',null);
+        }
+        
+        function nav(p){
+            document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
+            document.getElementById('pg-'+p).classList.add('active');
+            document.querySelectorAll('.nav-btn').forEach(x=>x.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+            const fab = document.getElementById('mainFab');
+            if(p === 'pack') fab.style.opacity = '0';
+            else fab.style.opacity = '1';
+        }
+        
+        function renderDates(){
+            const el=document.getElementById('dateStrip');el.innerHTML='';
+            const days=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+            for(let i=8;i<=18;i++){
+                const d=`2026-01-${i<10?'0'+i:i}`;const dt=new Date(d);const wk=days[dt.getDay()];
+                const div=document.createElement('div');div.className=`date-pill ${appData.currDate===d?'active':''}`;
+                div.innerHTML=`<div class="d-wk">${wk} ${i} Jan</div>`;
+                div.onclick=()=>{
+                    appData.currDate=d; closeMap();
+                    const w = WEATHER_DATA[d] || "❄️ -6°C Snow";
+                    document.getElementById('dashWeather').innerText = w;
+                    save(); 
+                };
+                el.appendChild(div);
+            }
+        }
+        
+        // Start App
+        initApp();
+    </script>
+</body>
+</html>

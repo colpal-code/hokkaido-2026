@@ -7,7 +7,7 @@
     <link rel="apple-touch-icon" href="icon.png">
     <link rel="icon" type="image/png" href="icon.png">
     
-    <title>Hokkaido V23</title>
+    <title>Hokkaido V24</title>
     <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700;800&display=swap" rel="stylesheet">
     
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
@@ -16,7 +16,7 @@
     <style>
         :root {
             --fuji-teal: #2A4B55; --fuji-red: #B54B4B; --fuji-gold: #D4AF37; --text-dark: #1a1a1a;
-            --glass-bg: rgba(255, 255, 255, 0.92);
+            --glass-bg: rgba(255, 255, 255, 0.95);
             --glass-border: 1px solid rgba(255, 255, 255, 0.6);
             --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
             --glass-blur: blur(20px);
@@ -27,7 +27,15 @@
         
         .glass-panel { background: var(--glass-bg); backdrop-filter: var(--glass-blur); border: var(--glass-border); box-shadow: var(--glass-shadow); border-radius: 24px; }
         
-        .app-header { position: sticky; top: 10px; z-index: 1000; margin: 0 15px 15px 15px; padding: 12px; text-align: center; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(15px); border-radius: 16px; box-shadow: var(--glass-shadow); }
+        /* SNOW TOPPER CLASS - ADDS SNOW TO TOP OF BLOCKS */
+        .snow-topper { position: relative; overflow: visible !important; }
+        .snow-topper::after {
+            content: ''; position: absolute; top: -15px; left: -2%; right: -2%; height: 35px;
+            background: url('snow.png') repeat-x top center; background-size: contain;
+            pointer-events: none; z-index: 50;
+        }
+
+        .app-header { position: sticky; top: 10px; z-index: 1000; margin: 0 15px 15px 15px; padding: 15px; text-align: center; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(15px); border-radius: 16px; box-shadow: var(--glass-shadow); }
         .app-title { font-size: 17px; font-weight: 800; color: var(--fuji-teal); letter-spacing: 0.5px; }
         
         .plan-sticky-header { position: sticky; top: 75px; z-index: 900; margin: 0 -10px; padding: 0 10px 5px 10px; backdrop-filter: blur(5px); }
@@ -56,7 +64,7 @@
         .hotel-name { font-weight: 800; font-size: 14px; color: var(--fuji-teal); }
         .hotel-map-link { font-size: 11px; color: var(--fuji-red); text-decoration: none; font-weight: 700; background: rgba(255,255,255,0.5); padding: 4px 8px; border-radius: 8px; margin-top: 4px; display: inline-block; }
 
-        .timeline-block { margin: 15px; padding: 20px 0; min-height: 500px; overflow: hidden; position: relative; background: var(--glass-bg); backdrop-filter: var(--glass-blur); border-radius: 24px; border: var(--glass-border); box-shadow: var(--glass-shadow); }
+        .timeline-block { margin: 15px; padding: 20px 0; min-height: 500px; overflow: visible; position: relative; background: var(--glass-bg); backdrop-filter: var(--glass-blur); border-radius: 24px; border: var(--glass-border); box-shadow: var(--glass-shadow); }
         .time-axis { position: absolute; left: 0; top: 20px; bottom: 20px; width: 70px; border-right: 2px dashed rgba(0,0,0,0.1); }
         .events-area { margin-left: 70px; position: relative; min-height: 100%; }
         .time-slot { height: var(--slot-height); position: relative; }
@@ -83,13 +91,11 @@
         .legend-item { font-size: 10px; display: flex; align-items: center; gap: 4px; background: rgba(255,255,255,0.5); padding: 4px 8px; border-radius: 8px; }
         .dot { width: 8px; height: 8px; border-radius: 50%; }
 
-        /* POOL STYLES */
         .pool-card { margin-top: 15px; border-top: 2px dashed rgba(42, 75, 85, 0.2); padding-top: 15px; }
         .pool-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; font-size: 12px; }
         .pool-label { font-weight: bold; color: #666; }
         .pool-val { font-weight: 800; color: var(--fuji-teal); }
         .pool-rem { color: var(--fuji-red); font-size: 14px; }
-        /* Single line edit button */
         .btn-pool-edit { padding: 6px 12px; font-size: 11px; white-space: nowrap; border-radius: 12px; background: #eee; color: #555; border: none; font-weight: 800; }
 
         .settle-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 12px; }
@@ -128,7 +134,7 @@
     </style>
 </head>
 <body>
-    <div class="app-header"><div class="app-title">2026の北海道食足三餐之旅🧣</div></div>
+    <div class="app-header snow-topper"><div class="app-title">2026の北海道食足三餐之旅🧣</div></div>
 
     <div id="pg-plan" class="page active">
         <div class="plan-sticky-header">
@@ -152,7 +158,7 @@
                 <div class="hotel-name">🏨 Loading Hotel...</div>
             </div>
         </div>
-        <div class="timeline-block"><div class="time-axis" id="timeAxis"></div><div class="events-area" id="eventsArea"></div></div>
+        <div class="timeline-block snow-topper"><div class="time-axis" id="timeAxis"></div><div class="events-area" id="eventsArea"></div></div>
     </div>
 
     <div id="pg-spend" class="page">
@@ -162,7 +168,8 @@
             <div style="width:140px; height:140px; border-radius:50%; background:rgba(255,255,255,0.5); margin:15px auto; position:relative;" id="poolPie"></div>
             <div class="pie-legend" id="pieLegend"></div>
         </div>
-        <div class="chart-card">
+        
+        <div class="chart-card snow-topper">
             <div style="text-align:center; font-size:14px; font-weight:800; color:var(--fuji-teal); margin-bottom:15px;">SETTLEMENT</div>
             <div id="settlementTable"></div>
             <div class="pool-card">
@@ -181,7 +188,7 @@
 
     <div id="pg-pack" class="page">
         <div style="margin:20px 15px 10px 15px; font-size:20px; font-weight:800; color:var(--fuji-teal);">🎒 Packing List</div>
-        <div style="margin:0 15px 15px 15px; background:white; padding:15px; border-radius:16px; box-shadow:var(--glass-shadow);">
+        <div class="snow-topper" style="margin:0 15px 15px 15px; background:white; padding:15px; border-radius:16px; box-shadow:var(--glass-shadow);">
             <select id="newPackCat" style="margin-bottom:10px;">
                 <option value="Personal ID">Personal ID</option>
                 <option value="Snowboard Gear">Snowboard Gear</option>
@@ -208,34 +215,60 @@
         <div class="modal-card">
             <h3 id="mTitle" style="margin-top:0; color:var(--fuji-teal);">Edit</h3>
             <input type="hidden" id="mId"><input type="hidden" id="mMode">
+            
             <div id="fPlan" style="display:none;">
                 <label class="input-label">Time</label>
                 <div style="display:flex; gap:10px;"><input type="time" id="inpStart"><input type="time" id="inpEnd"></div>
+                
                 <label class="input-label">Activity</label>
                 <input type="text" id="inpTitle" placeholder="Activity">
+                
                 <label class="input-label">Location</label>
                 <input type="text" id="inpLoc" placeholder="Location (MapCode / Address)">
             </div>
+
             <div id="fSpend" style="display:none;">
                 <label class="input-label">Category</label>
-                <select id="spCat"><option value="Food">Food 🍔</option><option value="Transport">Transport 🚆</option><option value="Hotel">Hotel 🏨</option><option value="Attractions">Attractions 🎡</option><option value="Shopping">Shopping 🛍</option><option value="Other">Other 📦</option></select>
+                <select id="spCat">
+                    <option value="Food">Food 🍔</option>
+                    <option value="Transport">Transport 🚆</option>
+                    <option value="Hotel">Hotel 🏨</option>
+                    <option value="Attractions">Attractions 🎡</option>
+                    <option value="Shopping">Shopping 🛍</option>
+                    <option value="Other">Other 📦</option>
+                </select>
+
                 <label class="input-label">Item</label>
                 <input type="text" id="spItem" placeholder="Item Name">
+
                 <label class="input-label">Amount</label>
-                <div style="display:flex; gap:10px;"><input type="number" id="spAmt" placeholder="0.00"><select id="spCurr" style="width:100px;"><option value="HKD">HKD</option><option value="JPY">JPY</option></select></div>
+                <div style="display:flex; gap:10px;">
+                    <input type="number" id="spAmt" placeholder="0.00">
+                    <select id="spCurr" style="width:100px;"><option value="HKD">HKD</option><option value="JPY">JPY</option></select>
+                </div>
+
                 <label class="input-label">Payment Method</label>
                 <select id="spMethod"><option value="Credit Card">Credit Card 💳</option><option value="Cash">Cash 💴</option><option value="Suica/IC">Suica/IC 🐧</option><option value="Alipay">Alipay</option></select>
+
                 <label class="input-label">Payer</label>
-                <select id="spPayer"><option value="Pool">Pool (Public Fund)</option><option value="Cho">Cho</option><option value="Dan">Dan</option><option value="Diaz">Diaz</option><option value="Skye">Skye</option></select>
+                <select id="spPayer">
+                    <option value="Pool">Pool (Public Fund)</option>
+                    <option value="Cho">Cho</option>
+                    <option value="Dan">Dan</option>
+                    <option value="Diaz">Diaz</option>
+                    <option value="Skye">Skye</option>
+                </select>
+
                 <label class="input-label">Purpose</label>
                 <select id="spType"><option value="Group">Group</option><option value="Personal">Personal</option></select>
             </div>
+
             <div class="btn-row"><button class="btn-sec" onclick="closeModal()">Cancel</button><button class="btn-primary" style="background:var(--fuji-red)" onclick="doDelete()">Delete</button><button class="btn-primary" onclick="doSave()">Save</button></div>
         </div>
     </div>
 
     <script>
-        // --- FIREBASE CONFIG (V23) ---
+        // --- FIREBASE CONFIG (V24) ---
         const firebaseConfig = {
           apiKey: "AIzaSyCywE_gs1H7-lw21_52hFwpT8mPjLS_8i8",
           authDomain: "hokkaido2026-5ad8b.firebaseapp.com",
@@ -322,7 +355,6 @@
             {id:12, cat:"Gadgets", text:"Travel Adapter", checks:{Cho:false,Dan:false,Diaz:false,Skye:false}}
         ];
         
-        // POOL DATA
         let appData = { 
             currDate:"2026-01-08", 
             schedule: rawSch.map((s,i)=>({id:i,date:s[0],start:s[1],end:s[2],title:s[3],loc:s[4]})), 
@@ -334,11 +366,11 @@
         
         let dbRef = null;
 
-        // --- INIT SYNC (V23) ---
+        // --- INIT SYNC (V24) ---
         function initApp() {
             firebase.initializeApp(firebaseConfig);
             const db = firebase.database();
-            dbRef = db.ref('hokkaido_v23_final'); 
+            dbRef = db.ref('hokkaido_v24_final'); 
             
             dbRef.on('value', (snapshot) => {
                 const val = snapshot.val();
@@ -379,10 +411,9 @@
             renderExpenses(); 
             renderPackList();
             
-            // 3. SMART DASHBOARD UPDATE (Based on Schedule)
+            // 3. SMART DASHBOARD UPDATE
             updateDashboardLocation();
             
-            // HOTEL BAR
             const h = HOTEL_INFO[appData.currDate];
             if (h) {
                 const mapLink = h.code !== 'N/A' ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(h.code)}` : '#';
@@ -397,26 +428,23 @@
             fetchWeather(appData.currDate);
         }
 
+        // MAP CODE FIX: IGNORE MAP CODE FOR VISUAL MAP
         function updateDashboardLocation() {
-            // Find current active schedule item or first of day
             const dailySched = appData.schedule.filter(e => e.date === appData.currDate);
             if (dailySched.length > 0) {
-                // For simplicity, pick the "Highlight" item (usually midday) or first item
-                // Better: Pick the longest item or one with a valid location
                 const mainItem = dailySched.find(e => e.start > "10:00" && e.start < "18:00") || dailySched[0];
                 const locName = mainItem.loc;
                 
-                // Update Text
                 document.getElementById('dashLoc').innerText = locName;
                 document.getElementById('dashHighlight').innerText = "📍 " + mainItem.title;
                 
-                // MAP LOGIC: If MapCode (digits), do NOT use for Visual Map, use Title instead
+                // IF LOC IS A MAPCODE (Digits), SEARCH BY TITLE INSTEAD
                 const isMapCode = /^\d[\d\s]*$/.test(locName);
                 const searchQ = isMapCode ? mainItem.title + " Hokkaido" : locName + " Hokkaido";
                 
                 document.getElementById('dashMapFrame').src=`https://maps.google.com/maps?q=${encodeURIComponent(searchQ)}&output=embed`;
                 
-                // Update Nav Button (Use actual location/code)
+                // NAV BUTTON USES ACTUAL LOC/CODE
                 const btn = document.getElementById('mapBtn');
                 btn.href = `https://www.google.com/maps/embed?pb=...{encodeURIComponent(locName)}`;
                 btn.innerText = "📍 Navigate Here";
@@ -454,9 +482,7 @@
                     if(top>=0){
                         const el=document.createElement('div');el.className='t-event';el.style.top=(top+5)+'px';el.style.height=(h>25?h-5:25)+'px';
                         el.innerHTML=`<div class="t-title">${e.title}</div><div class="t-loc">📍 ${e.loc}</div><div class="card-edit-btn" onclick="editEvent(event,${e.id})">✎</div>`;
-                        // CLICK EVENT TO NAVIGATE MAP
-                        el.onclick=()=>showMap(e.loc);
-                        ar.appendChild(el);
+                        el.onclick=()=>showMap(e.loc);ar.appendChild(el);
                     }
                 });
             }
@@ -464,7 +490,7 @@
         }
         function addSun(c,t,i){const h=parseInt(t.split(':')[0]),m=parseInt(t.split(':')[1]);const mn=(h-5)*60+m;const tp=(mn/60)*SLOT_HEIGHT;if(tp>0){const d=document.createElement('div');d.className='sun-marker-axis';d.style.top=tp+'px';d.innerHTML=`<div class="sun-text-axis">${i} ${t}</div>`;c.appendChild(d);}}
 
-        // UPDATED POOL LOGIC (Currency + Conversion)
+        // POOL LOGIC (Currency)
         function editPool(){
             let current = appData.poolTotal || 0;
             let val = prompt("Enter Pool Amount (Numbers only):", current);
@@ -483,12 +509,12 @@
             let poolSpent = 0; // In Pool Currency
             let pCurr = appData.poolCurr || "HKD";
 
+            // 1. Calculate All Totals
             if(appData.expenses) {
                 appData.expenses.forEach(e=>{
-                    // Standardize value to HKD for Stats
                     let vHKD = e.curr==='JPY' ? e.amount*RATE : e.amount;
                     
-                    // POOL CALCULATION (Convert Expense to Pool Currency)
+                    // POOL CALC
                     if(e.payer === 'Pool'){
                         let expenseValInPoolCurr = 0;
                         if(pCurr === 'HKD'){
@@ -499,17 +525,18 @@
                         poolSpent += expenseValInPoolCurr;
                     } 
                     else if(e.type==='Group'){ 
-                        // Normal Group Settlement
                         tg+=vHKD; 
                         if(pb[e.payer]!==undefined) pb[e.payer]+=vHKD; 
                     }
                     
-                    // Pie Chart uses HKD
-                    if(e.cat) catTotals[e.cat]=(catTotals[e.cat]||0)+vHKD;
+                    // PIE CHART FIX: Initialize if needed
+                    if(e.cat) {
+                        catTotals[e.cat] = (catTotals[e.cat] || 0) + vHKD;
+                    }
                 });
             }
 
-            // RENDER POOL CARD
+            // RENDER POOL
             let pTotal = appData.poolTotal || 0;
             document.getElementById('pTotal').innerText = '$' + fmtMoney(pTotal) + ' ' + pCurr;
             document.getElementById('pPaid').innerText = '$' + fmtMoney(poolSpent) + ' ' + pCurr;
@@ -531,8 +558,11 @@
                     });
                 }
             });
-            document.getElementById('totalSpend').innerText=fmtMoney(tg); 
-            renderPie(catTotals,tg); 
+            
+            // Total includes Pool spending converted to HKD for consistency
+            let poolSpentHKD = (pCurr === 'JPY') ? poolSpent*RATE : poolSpent;
+            document.getElementById('totalSpend').innerText=fmtMoney(tg + poolSpentHKD); 
+            renderPie(catTotals, (tg + poolSpentHKD)); 
             renderSettlement(tg,pb);
         }
 
@@ -547,9 +577,17 @@
             h+=`</tbody></table>`; tb.innerHTML=h;
         }
 
+        // PIE CHART FIX
         function renderPie(c,t){
             let d=0,css=[],i=0;
             const legendEl = document.getElementById('pieLegend'); legendEl.innerHTML='';
+            
+            // Ensure t > 0 to avoid division by zero
+            if (t <= 0) {
+                document.getElementById('poolPie').style.background = '#eee';
+                return;
+            }
+
             for(let k in c){
                 if(c[k]>0){
                     let p=(c[k]/t)*360;
@@ -559,7 +597,9 @@
                     legendEl.innerHTML += `<div class="legend-item"><div class="dot" style="background:${col}"></div>${k} (${Math.round((c[k]/t)*100)}%)</div>`;
                 }
             }
-            if(t>0)document.getElementById('poolPie').style.background=`conic-gradient(${css.join(',')})`;
+            if(css.length > 0){
+                document.getElementById('poolPie').style.background=`conic-gradient(${css.join(',')})`;
+            }
         }
 
         function renderPackList(){
@@ -624,11 +664,6 @@
 
         // MAP NAVIGATION LOGIC
         function showMap(l){
-            // 2. MAP CODE FIX: Check if l looks like digits (MapCode)
-            // If yes, don't use it for search query, use Title instead.
-            // But KEEP it for navigation button.
-            
-            // We need to find the event title associated with this location to be smart
             const event = appData.schedule.find(e => e.loc === l);
             const searchQ = (event && /^\d[\d\s]*$/.test(l)) ? event.title + " Hokkaido" : l + " Hokkaido";
             

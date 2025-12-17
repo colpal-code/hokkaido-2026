@@ -23,30 +23,26 @@
             --slot-height: 60px;
         }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'M PLUS Rounded 1c', sans-serif !important; }
-        body { margin: 0; padding: 0; color: var(--text-dark); padding-bottom: 140px; background: url('mailbox.png') no-repeat center center fixed; background-size: cover; min-height: 100vh; }
+        body { margin: 0; padding: 0; color: var(--text-dark); padding-bottom: 110px; background: url('mailbox.png') no-repeat center center fixed; background-size: cover; min-height: 100vh; }
         
         .glass-panel { background: var(--glass-bg); backdrop-filter: var(--glass-blur); border: var(--glass-border); box-shadow: var(--glass-shadow); border-radius: 24px; }
         
-        /* --- REVISED SNOW TOPPER CSS (V25) --- */
+        /* --- 1. SNOW FIX: NO REPEAT, CORNER ONLY --- */
         .snow-topper { position: relative; overflow: visible !important; }
         .snow-topper::after {
             content: ''; 
             position: absolute;
-            /* Lowered from -15px to sit on the block */
-            top: -5px; 
-            /* Snug fit horizontally */
-            left: 0; right: 0; 
-            height: 35px;
+            top: -12px; 
+            right: -5px; /* Sit on the right corner */
+            width: 100px; /* Fixed width so it doesn't stretch */
+            height: 45px;
             background: url('snow.png');
-            /* IMPORTANT: repeat-x only. no-repeat ensures it only shows once vertically */
-            background-repeat: repeat-x no-repeat;
-            background-position: top center;
-            /* Ensures it fits the container height nicely */
-            background-size: auto 100%; 
+            background-repeat: no-repeat;
+            background-position: top right;
+            background-size: contain; 
             pointer-events: none; 
             z-index: 50;
         }
-        /* ------------------------------------ */
 
         .app-header { position: sticky; top: 10px; z-index: 1000; margin: 0 15px 15px 15px; padding: 15px; text-align: center; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(15px); border-radius: 16px; box-shadow: var(--glass-shadow); }
         .app-title { font-size: 17px; font-weight: 800; color: var(--fuji-teal); letter-spacing: 0.5px; }
@@ -86,6 +82,11 @@
         .sun-marker-axis { position: absolute; left: 5px; right: 5px; height: 1px; border-top: 2px dotted var(--fuji-gold); z-index: 5; pointer-events: none; }
         .sun-text-axis { position: absolute; left: 0; top: -18px; width: 100%; text-align: center; font-size: 9px; background: #fff; border-radius: 4px; color: var(--fuji-gold); font-weight: bold; padding: 1px; border: 1px solid var(--fuji-gold); }
 
+        /* --- 3. RED TIME LINE --- */
+        .now-line { position: absolute; left: 0; right: 0; height: 2px; background: var(--fuji-red); z-index: 50; pointer-events: none; }
+        .now-line::before { content: 'NOW'; position: absolute; left: -50px; top: -8px; width: 45px; text-align:right; color: var(--fuji-red); font-size: 10px; font-weight: 800; }
+        .now-line::after { content: ''; position: absolute; left: -4px; top: -3px; width: 8px; height: 8px; background: var(--fuji-red); border-radius: 50%; }
+
         .t-event { position: absolute; left: 10px; right: 15px; background: rgba(244, 242, 233, 0.95); border-radius: 12px; padding: 6px 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.08); z-index: 10; cursor: pointer; border: 1px solid rgba(0,0,0,0.05); }
         .t-event::before { content: ''; position: absolute; top: -5px; left: 8px; right: 8px; height: 8px; background: rgba(255,255,255,0.9); border-radius: 10px 10px 0 0; opacity: 0.9; }
         .t-title { font-weight: 800; font-size: 13px; color: var(--fuji-teal); margin-bottom: 2px; line-height: 1.1; }
@@ -109,7 +110,9 @@
         .pool-label { font-weight: bold; color: #666; }
         .pool-val { font-weight: 800; color: var(--fuji-teal); }
         .pool-rem { color: var(--fuji-red); font-size: 14px; }
-        .btn-pool-edit { padding: 6px 12px; font-size: 11px; white-space: nowrap; border-radius: 12px; background: #eee; color: #555; border: none; font-weight: 800; }
+        
+        /* --- 4. POOL BTN SMALLER --- */
+        .btn-pool-edit { padding: 4px 10px; font-size: 11px; white-space: nowrap; border-radius: 12px; background: #eee; color: #555; border: none; font-weight: 800; width: auto; }
 
         .settle-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 12px; }
         .settle-table th { text-align: left; color: #666; padding-bottom: 8px; font-weight: normal; }
@@ -122,6 +125,11 @@
         .pack-row-checks { display: flex; gap: 6px; justify-content: flex-end; flex-wrap: wrap; }
         .p-bubble { padding: 4px 10px; border-radius: 14px; border: 1px solid #ddd; background: #fff; color: #ccc; font-size: 10px; font-weight: 800; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; min-width: 40px; }
         .p-bubble.checked { background: var(--fuji-teal); color: white; border-color: var(--fuji-teal); }
+
+        /* --- 2. PACKING PROGRESS BAR --- */
+        .progress-container { margin: 0 15px 15px 15px; background: rgba(255,255,255,0.5); height: 10px; border-radius: 5px; overflow: hidden; }
+        .progress-fill { height: 100%; background: var(--fuji-teal); width: 0%; transition: width 0.5s ease; }
+        .progress-text { margin: 0 15px 5px 15px; font-size: 11px; font-weight: 800; color: var(--fuji-teal); text-align: right; }
 
         .nav-container { position: fixed; bottom: 25px; left: 20px; right: 20px; height: 75px; background: rgba(255,255,255,0.95); backdrop-filter: blur(20px); border-radius: 24px; display: flex; justify-content: space-around; align-items: center; z-index: 2000; padding: 0 10px; border: 1px solid rgba(255,255,255,0.5); box-shadow: none !important; }
         .nav-btn { text-align: center; color: #999; font-size: 10px; font-weight: 700; flex: 1; transition: 0.3s; padding: 10px; border-radius: 16px; }
@@ -161,7 +169,7 @@
                     </div>
                     <div>
                         <div class="dash-rate" id="dashRate">$100 JPY = $5.3 HKD</div>
-                        <a href="https://maps.app.goo.gl/c5XAecG5huUmNr6x6?g_st=i" target="_blank" class="dash-map-btn" id="mapBtn">🗺️ Open Full Map</a>
+                        <a href="https://www.google.com/maps" target="_blank" class="dash-map-btn" id="mapBtn">🗺️ Open Full Map</a>
                     </div>
                 </div>
                 <iframe class="dash-map" id="dashMapFrame" src=""></iframe>
@@ -176,7 +184,7 @@
 
     <div id="pg-spend" class="page">
         <div class="chart-card">
-            <div style="text-align:center; font-size:12px; font-weight:800; color:#666; letter-spacing:1px; margin-bottom:5px;">POOL SPENDING</div>
+            <div style="text-align:center; font-size:12px; font-weight:800; color:#666; letter-spacing:1px; margin-bottom:5px;">TOTAL SPENDING (HKD)</div>
             <div style="text-align:center; font-size:36px; font-weight:800; color:var(--text-dark);">$<span id="totalSpend">0</span></div>
             <div style="width:140px; height:140px; border-radius:50%; background:rgba(255,255,255,0.5); margin:15px auto; position:relative;" id="poolPie"></div>
             <div class="pie-legend" id="pieLegend"></div>
@@ -187,12 +195,14 @@
             <div id="settlementTable"></div>
             <div class="pool-card">
                 <div class="pool-row" style="margin-bottom:10px;">
-                    <span style="font-size:14px; font-weight:800; color:var(--fuji-teal);">🏊 POOL FUND</span>
-                    <button class="btn-pool-edit" onclick="editPool()">Edit Pool</button>
+                    <span style="font-size:14px; font-weight:800; color:var(--fuji-teal);">🏊 POOL FUNDS</span>
+                    <button class="btn-pool-edit" onclick="openModal('pool', null)">Edit Pool</button>
                 </div>
-                <div class="pool-row"><span class="pool-label">Total Fund:</span><span class="pool-val" id="pTotal">$0</span></div>
-                <div class="pool-row"><span class="pool-label">Pool Paid:</span><span class="pool-val" id="pPaid">$0</span></div>
-                <div class="pool-row" style="margin-top:5px; padding-top:5px; border-top:1px solid #eee;"><span class="pool-label">Remaining:</span><span class="pool-val pool-rem" id="pBal">$0</span></div>
+                <div class="pool-row"><span class="pool-label">HKD Fund:</span><span class="pool-val" id="pHKD">$0</span></div>
+                <div class="pool-row"><span class="pool-label">JPY Fund:</span><span class="pool-val" id="pJPY">¥0</span></div>
+                <div style="border-top:1px solid #eee; margin:5px 0;"></div>
+                <div class="pool-row"><span class="pool-label">Rem (HKD):</span><span class="pool-val pool-rem" id="remHKD">$0</span></div>
+                <div class="pool-row"><span class="pool-label">Rem (JPY):</span><span class="pool-val pool-rem" id="remJPY">¥0</span></div>
             </div>
         </div>
         <div style="margin: 0 15px 15px 15px; font-size:16px; font-weight:800; color:var(--fuji-teal); letter-spacing:1px;">TRANSACTIONS</div>
@@ -201,6 +211,10 @@
 
     <div id="pg-pack" class="page">
         <div style="margin:20px 15px 10px 15px; font-size:20px; font-weight:800; color:var(--fuji-teal);">🎒 Packing List</div>
+        
+        <div class="progress-text" id="packText">Ready: 0%</div>
+        <div class="progress-container"><div class="progress-fill" id="packFill"></div></div>
+
         <div class="snow-topper" style="margin:0 15px 15px 15px; background:white; padding:15px; border-radius:16px; box-shadow:var(--glass-shadow);">
             <select id="newPackCat" style="margin-bottom:10px;">
                 <option value="Personal ID">Personal ID</option>
@@ -276,12 +290,21 @@
                 <select id="spType"><option value="Group">Group</option><option value="Personal">Personal</option></select>
             </div>
 
-            <div class="btn-row"><button class="btn-sec" onclick="closeModal()">Cancel</button><button class="btn-primary" style="background:var(--fuji-red)" onclick="doDelete()">Delete</button><button class="btn-primary" onclick="doSave()">Save</button></div>
+            <div id="fPool" style="display:none;">
+                <label class="input-label">HKD Pool Fund</label>
+                <input type="number" id="plHKD" placeholder="e.g. 20000">
+                
+                <label class="input-label">JPY Pool Fund</label>
+                <input type="number" id="plJPY" placeholder="e.g. 100000">
+                <div style="font-size:11px; color:#888; margin-top:5px;">Enter the total collected cash for each currency.</div>
+            </div>
+
+            <div class="btn-row"><button class="btn-sec" onclick="closeModal()">Cancel</button><button class="btn-primary" style="background:var(--fuji-red)" onclick="doDelete()" id="btnDel">Delete</button><button class="btn-primary" onclick="doSave()">Save</button></div>
         </div>
     </div>
 
     <script>
-        // --- FIREBASE CONFIG (V24) ---
+        // --- FIREBASE CONFIG ---
         const firebaseConfig = {
           apiKey: "AIzaSyCywE_gs1H7-lw21_52hFwpT8mPjLS_8i8",
           authDomain: "hokkaido2026-5ad8b.firebaseapp.com",
@@ -317,13 +340,6 @@
             "2026-01-18": { lat: 43.06, lon: 141.35 }
         };
 
-        const DAILY_HIGHLIGHTS = {
-            "2026-01-08": "Otaru Arrival 🍣", "2026-01-09": "Otaru Canal 📷", "2026-01-10": "Shiroi Koibito 🍪", 
-            "2026-01-11": "Ningle Terrace 🧚‍♀️", "2026-01-12": "Skiing Day ⛷️", "2026-01-13": "Biei Trees 🌲",
-            "2026-01-14": "Asahiyama Zoo 🐧", "2026-01-15": "Lake Akan Activity ❄️", "2026-01-16": "Kushiro Sunset 🌅", 
-            "2026-01-17": "Shopping Day 🛍️", "2026-01-18": "Flight Home ✈️"
-        };
-
         const PEOPLE=['Cho','Dan','Diaz','Skye'];
         const CATEGORIES = ["Food", "Transport", "Hotel", "Attractions", "Shopping", "Other"];
         const PACK_CATEGORIES = ["Personal ID", "Snowboard Gear", "Defeat Cold Items", "Gadgets", "Other"];
@@ -331,41 +347,15 @@
 
         const rawSch = [
             ["2026-01-08", "05:30", "06:30", "出發機場🛫", "HK Home"], ["2026-01-08", "09:00", "15:30", "HB008 HKG - CTS ✈️", "Flight"], ["2026-01-08", "16:30", "17:30", "攞車🚗", "CTS"], ["2026-01-08", "17:30", "19:00", "開車到小樽🫙", "Drive"], ["2026-01-08", "19:00", "20:00", "晚餐 (政壽司🍣)", "Otaru"], ["2026-01-08", "20:00", "21:00", "check in酒店", "Dormy Inn"], ["2026-01-08", "21:00", "22:00", "天狗山夜景🌛", "Tenguyama"],
-            ["2026-01-09", "08:00", "12:30", "拍照📷", "Otaru Canal"], ["2026-01-09", "12:30", "14:00", "午餐🍱", "Otaru"], ["2026-01-09", "14:00", "18:00", "小樽9逛🛍️", "Sakaimachi"], ["2026-01-09", "18:00", "19:30", "開車到札幌", "Drive"], ["2026-01-09", "19:30", "21:00", "晚餐 (牛乃家🍜)", "Sapporo"], ["2026-01-09", "21:00", "22:00", "check in & 休息", "Sapporo Hotel"],
-            ["2026-01-10", "09:30", "12:30", "白之戀人博物館🍪", "Sapporo"], ["2026-01-10", "12:30", "14:30", "午餐(蟹遊亭🦀)", "Sapporo"], ["2026-01-10", "15:00", "17:30", "札幌啤酒博物館🍺", "Sapporo"], ["2026-01-10", "19:00", "21:00", "晚餐(冰雪之門🦀)", "Sapporo"],
-            ["2026-01-11", "09:00", "11:30", "開車到富良野🚗", "Drive"], ["2026-01-11", "12:30", "14:00", "午餐🍱", "Furano"], ["2026-01-11", "14:30", "17:30", "學滑雪 & 適應雪場⛷️", "Furano Ski"], ["2026-01-11", "18:00", "19:30", "精靈露台🧚‍♀️", "Ningle Terrace"], ["2026-01-11", "19:30", "21:00", "晚餐🥘", "Furano"],
-            ["2026-01-12", "09:00", "17:00", "滑雪⛷️", "Furano Ski"], ["2026-01-12", "18:00", "19:00", "晚餐🥘", "Furano"],
-            ["2026-01-13", "08:30", "09:30", "開車到美瑛🚗", "Drive"], ["2026-01-13", "09:30", "10:30", "聖誕樹🎄", "Biei"], ["2026-01-13", "10:30", "11:30", "Mild Seven Hills🌲", "Biei"], ["2026-01-13", "11:30", "13:30", "美瑛の森 KONON", "Cafe"], ["2026-01-13", "13:30", "14:30", "四季彩之丘🌸", "Biei"], ["2026-01-13", "14:30", "15:30", "清池/瀑布💧", "Blue Pond"], ["2026-01-13", "16:30", "17:30", "旭川 (Check in)", "Asahikawa"], ["2026-01-13", "18:00", "20:00", "晚餐(成吉思汗大黑屋)🥩", "Asahikawa"],
-            ["2026-01-14", "09:30", "12:00", "旭川動物園🐧", "Asahiyama"], ["2026-01-14", "12:00", "16:00", "去阿寒湖🚗", "Drive"], ["2026-01-14", "16:30", "23:00", "溫泉旅館休息 & 嘆♨️", "La Vista"],
-            ["2026-01-15", "09:30", "16:00", "阿寒湖 (Activity)❄️", "Lake Akan"], ["2026-01-15", "16:30", "23:00", "溫泉旅館休息 & 嘆♨️", "La Vista"],
-            ["2026-01-16", "10:00", "10:30", "check out酒店", "Akan"], ["2026-01-16", "10:30", "13:00", "出發去厚岸🚗", "Drive"], ["2026-01-16", "13:00", "14:30", "🦪蠔 (厚岸蠔)", "Akkeshi"], ["2026-01-16", "14:30", "16:00", "影日落🌅", "Kushiro"], ["2026-01-16", "16:00", "17:30", "出發川路", "Drive"], ["2026-01-16", "17:30", "19:00", "晚餐🥘", "Kushiro"],
-            ["2026-01-17", "09:00", "13:00", "開去札幌🚗", "Drive"], ["2026-01-17", "13:00", "14:30", "午餐🍱", "Sapporo"], ["2026-01-17", "16:00", "20:00", "札幌 City / Shopping🛍️", "Sapporo"], ["2026-01-17", "20:00", "21:30", "晚餐🥘", "Sapporo"],
-            ["2026-01-18", "09:00", "13:00", "開去機場🚗", "Drive"], ["2026-01-18", "13:00", "14:00", "還車🚗（成田機場?)", "Rental"], ["2026-01-18", "16:00", "21:00", "HB008 HKG - CTS ✈️", "Flight"]
+            ["2026-01-09", "08:00", "12:30", "拍照📷", "Otaru Canal"], ["2026-01-09", "12:30", "14:00", "午餐🍱", "Otaru"], ["2026-01-09", "14:00", "18:00", "小樽9逛🛍️", "Sakaimachi"], ["2026-01-09", "18:00", "19:30", "開車到札幌", "Drive"], ["2026-01-09", "19:30", "21:00", "晚餐 (牛乃家🍜)", "Sapporo"], ["2026-01-09", "21:00", "22:00", "check in & 休息", "Sapporo Hotel"]
         ];
 
         const rawExp = [
-            { id:1, item:"Hotel: Otaru", amount:1327.36, curr:"HKD", payer:"Cho", cat:"Hotel", type:"Group" },
-            { id:2, item:"Hotel: Sapporo", amount:2449.40, curr:"HKD", payer:"Cho", cat:"Hotel", type:"Group" },
-            { id:3, item:"Hotel: Furano", amount:6551.40, curr:"HKD", payer:"Cho", cat:"Hotel", type:"Group" },
-            { id:4, item:"Hotel: Asahikawa", amount:918.44, curr:"HKD", payer:"Cho", cat:"Hotel", type:"Group" },
-            { id:5, item:"Hotel: Akan", amount:0, curr:"HKD", payer:"Cho", cat:"Hotel", type:"Group", method:"Pay at Hotel" },
-            { id:6, item:"Hotel: Kushiro", amount:867.58, curr:"HKD", payer:"Cho", cat:"Hotel", type:"Group" },
-            { id:7, item:"Hotel: Sapporo", amount:2235.14, curr:"HKD", payer:"Cho", cat:"Hotel", type:"Group" }
+            { id:1, item:"Hotel: Otaru", amount:1327.36, curr:"HKD", payer:"Cho", cat:"Hotel", type:"Group" }
         ];
 
         const DEFAULT_PACK = [
-            {id:1, cat:"Personal ID", text:"Passport", checks:{Cho:false,Dan:false,Diaz:false,Skye:false}},
-            {id:2, cat:"Snowboard Gear", text:"Helmet", checks:{Cho:false,Dan:false,Diaz:false,Skye:false}},
-            {id:3, cat:"Snowboard Gear", text:"Goggles (Low/High light)", checks:{Cho:false,Dan:false,Diaz:false,Skye:false}},
-            {id:4, cat:"Snowboard Gear", text:"Impact Shorts", checks:{Cho:false,Dan:false,Diaz:false,Skye:false}},
-            {id:5, cat:"Snowboard Gear", text:"Gloves (Waterproof)", checks:{Cho:false,Dan:false,Diaz:false,Skye:false}},
-            {id:6, cat:"Snowboard Gear", text:"Base Layers (Top/Bottom)", checks:{Cho:false,Dan:false,Diaz:false,Skye:false}},
-            {id:7, cat:"Snowboard Gear", text:"Snowboard Socks", checks:{Cho:false,Dan:false,Diaz:false,Skye:false}},
-            {id:8, cat:"Snowboard Gear", text:"Neck Warmer/Balaclava", checks:{Cho:false,Dan:false,Diaz:false,Skye:false}},
-            {id:9, cat:"Defeat Cold Items", text:"Heat Tech", checks:{Cho:false,Dan:false,Diaz:false,Skye:false}},
-            {id:10, cat:"Defeat Cold Items", text:"Hand Warmers", checks:{Cho:false,Dan:false,Diaz:false,Skye:false}},
-            {id:11, cat:"Gadgets", text:"Power Bank", checks:{Cho:false,Dan:false,Diaz:false,Skye:false}},
-            {id:12, cat:"Gadgets", text:"Travel Adapter", checks:{Cho:false,Dan:false,Diaz:false,Skye:false}}
+            {id:1, cat:"Personal ID", text:"Passport", checks:{Cho:false,Dan:false,Diaz:false,Skye:false}}
         ];
         
         let appData = { 
@@ -373,17 +363,16 @@
             schedule: rawSch.map((s,i)=>({id:i,date:s[0],start:s[1],end:s[2],title:s[3],loc:s[4]})), 
             expenses: rawExp, 
             packList: DEFAULT_PACK,
-            poolTotal: 0,
-            poolCurr: "HKD" // Default
+            poolHKD: 0,
+            poolJPY: 0
         };
         
         let dbRef = null;
 
-        // --- INIT SYNC (V24) ---
         function initApp() {
             firebase.initializeApp(firebaseConfig);
             const db = firebase.database();
-            dbRef = db.ref('hokkaido_v24_final'); 
+            dbRef = db.ref('hokkaido_v25_fixed'); 
             
             dbRef.on('value', (snapshot) => {
                 const val = snapshot.val();
@@ -406,9 +395,7 @@
                     const displayRate = (100 * RATE).toFixed(1);
                     document.getElementById('dashRate').innerText = `$100 JPY = $${displayRate} HKD`;
                 }
-            } catch (e) {
-                console.log("Currency error");
-            }
+            } catch (e) { console.log("Currency error"); }
         }
 
         function save() {
@@ -424,15 +411,14 @@
             renderExpenses(); 
             renderPackList();
             
-            // 3. SMART DASHBOARD UPDATE
             updateDashboardLocation();
             
             const h = HOTEL_INFO[appData.currDate];
             if (h) {
-                const mapLink = h.code !== 'N/A' ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(h.code)}` : '#';
+                const mapLink = h.code.includes("MapCode") || h.code.includes("Address") ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(h.code)}` : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(h.name + ' Hokkaido')}`;
                 document.getElementById('hotelBar').innerHTML = `
                     <div class="hotel-name">🏨 ${h.name}</div>
-                    <a href="${mapLink}" target="_blank" class="hotel-map-link">📍 Address/Map Code: ${h.code}</a>
+                    <a href="${mapLink}" target="_blank" class="hotel-map-link">📍 ${h.code}</a>
                 `;
             } else {
                 document.getElementById('hotelBar').innerHTML = '<div>🏨 No Hotel</div>';
@@ -441,29 +427,23 @@
             fetchWeather(appData.currDate);
         }
 
-        // MAP CODE FIX: IGNORE MAP CODE FOR VISUAL MAP
         function updateDashboardLocation() {
             const dailySched = appData.schedule.filter(e => e.date === appData.currDate);
             if (dailySched.length > 0) {
                 const mainItem = dailySched.find(e => e.start > "10:00" && e.start < "18:00") || dailySched[0];
-                const locName = mainItem.loc;
-                
-                document.getElementById('dashLoc').innerText = locName;
+                document.getElementById('dashLoc').innerText = mainItem.loc;
                 document.getElementById('dashHighlight').innerText = "📍 " + mainItem.title;
                 
-                // IF LOC IS A MAPCODE (Digits), SEARCH BY TITLE INSTEAD
-                const isMapCode = /^\d[\d\s]*$/.test(locName);
-                const searchQ = isMapCode ? mainItem.title + " Hokkaido" : locName + " Hokkaido";
+                const searchQ = mainItem.loc + " Hokkaido";
+                document.getElementById('dashMapFrame').src=`https://maps.google.com/maps?q=${encodeURIComponent(searchQ)}&t=&z=13&ie=UTF8&iwloc=&output=embed`;
                 
-                document.getElementById('dashMapFrame').src=`https://maps.google.com/maps?q=${encodeURIComponent(searchQ)}&output=embed`;
-                
-                // NAV BUTTON USES ACTUAL LOC/CODE
                 const btn = document.getElementById('mapBtn');
-                btn.href = `https://www.google.com/maps/embed?pb=...{encodeURIComponent(locName)}`;
+                btn.href = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(mainItem.loc + " Hokkaido")}`;
                 btn.innerText = "📍 Navigate Here";
                 btn.classList.add('nav-mode');
             } else {
                 document.getElementById('dashLoc').innerText = "Free Day";
+                document.getElementById('dashHighlight').innerText = "Relax";
             }
         }
 
@@ -480,6 +460,15 @@
         function renderTimeline(){
             const ax=document.getElementById('timeAxis'), ar=document.getElementById('eventsArea');
             ax.innerHTML='';ar.innerHTML='';
+            
+            // 3. NOW LINE LOGIC
+            // Get today's date in YYYY-MM-DD
+            const now = new Date();
+            const y = now.getFullYear();
+            const m = String(now.getMonth() + 1).padStart(2, '0');
+            const dStr = String(now.getDate()).padStart(2, '0');
+            const todayStr = `${y}-${m}-${dStr}`;
+
             for(let i=5;i<=24;i++){
                 const d=document.createElement('div');d.className='time-slot';
                 const label = `${i.toString().padStart(2, '0')}:00`;
@@ -499,61 +488,60 @@
                     }
                 });
             }
+            
+            // DRAW RED LINE IF TODAY
+            if(appData.currDate === todayStr) {
+                const curH = now.getHours();
+                const curM = now.getMinutes();
+                if(curH >= 5) {
+                    const min = (curH - 5)*60 + curM;
+                    const top = (min/60)*SLOT_HEIGHT;
+                    const line = document.createElement('div');
+                    line.className = 'now-line';
+                    line.style.top = top + 'px';
+                    ar.appendChild(line);
+                }
+            }
+
             addSun(ax,"07:06","🌅");addSun(ax,"16:20","🌇");
         }
         function addSun(c,t,i){const h=parseInt(t.split(':')[0]),m=parseInt(t.split(':')[1]);const mn=(h-5)*60+m;const tp=(mn/60)*SLOT_HEIGHT;if(tp>0){const d=document.createElement('div');d.className='sun-marker-axis';d.style.top=tp+'px';d.innerHTML=`<div class="sun-text-axis">${i} ${t}</div>`;c.appendChild(d);}}
-
-        // POOL LOGIC (Currency)
-        function editPool(){
-            let current = appData.poolTotal || 0;
-            let val = prompt("Enter Pool Amount (Numbers only):", current);
-            if(val !== null){
-                let cur = prompt("Currency? (HKD or JPY)", appData.poolCurr || "HKD");
-                appData.poolTotal = parseFloat(val) || 0;
-                appData.poolCurr = (cur && cur.toUpperCase() === 'JPY') ? 'JPY' : 'HKD';
-                save();
-            }
-        }
 
         function renderExpenses(){
             const l=document.getElementById('expenseList');l.innerHTML='';
             let tg=0; let pb={'Cho':0,'Dan':0,'Diaz':0,'Skye':0}; let catTotals={};
             
-            let poolSpent = 0; // In Pool Currency
-            let pCurr = appData.poolCurr || "HKD";
+            // 4. DUAL POOL TRACKING
+            let poolPaidHKD = 0;
+            let poolPaidJPY = 0;
 
-            // 1. Calculate All Totals
             if(appData.expenses) {
                 appData.expenses.forEach(e=>{
                     let vHKD = e.curr==='JPY' ? e.amount*RATE : e.amount;
                     
-                    // POOL CALC
                     if(e.payer === 'Pool'){
-                        let expenseValInPoolCurr = 0;
-                        if(pCurr === 'HKD'){
-                            expenseValInPoolCurr = (e.curr === 'JPY') ? e.amount*RATE : e.amount;
-                        } else { // Pool is JPY
-                            expenseValInPoolCurr = (e.curr === 'HKD') ? e.amount/RATE : e.amount;
-                        }
-                        poolSpent += expenseValInPoolCurr;
+                        if(e.curr === 'HKD') poolPaidHKD += e.amount;
+                        else if(e.curr === 'JPY') poolPaidJPY += e.amount;
                     } 
                     else if(e.type==='Group'){ 
                         tg+=vHKD; 
                         if(pb[e.payer]!==undefined) pb[e.payer]+=vHKD; 
                     }
                     
-                    // PIE CHART FIX: Initialize if needed
-                    if(e.cat) {
+                    if(e.cat && (e.payer !== 'Pool')) { // Only count non-pool spending in breakdown or logic depends on how you want to see it
                         catTotals[e.cat] = (catTotals[e.cat] || 0) + vHKD;
                     }
                 });
             }
 
-            // RENDER POOL
-            let pTotal = appData.poolTotal || 0;
-            document.getElementById('pTotal').innerText = '$' + fmtMoney(pTotal) + ' ' + pCurr;
-            document.getElementById('pPaid').innerText = '$' + fmtMoney(poolSpent) + ' ' + pCurr;
-            document.getElementById('pBal').innerText = '$' + fmtMoney(pTotal - poolSpent) + ' ' + pCurr;
+            // RENDER POOL CARD
+            const pHKD = parseFloat(appData.poolHKD || 0);
+            const pJPY = parseFloat(appData.poolJPY || 0);
+            
+            document.getElementById('pHKD').innerText = '$' + fmtMoney(pHKD);
+            document.getElementById('pJPY').innerText = '¥' + fmtMoney(pJPY);
+            document.getElementById('remHKD').innerText = '$' + fmtMoney(pHKD - poolPaidHKD);
+            document.getElementById('remJPY').innerText = '¥' + fmtMoney(pJPY - poolPaidJPY);
 
             // RENDER LIST
             CATEGORIES.forEach(cat => {
@@ -572,10 +560,10 @@
                 }
             });
             
-            // Total includes Pool spending converted to HKD for consistency
-            let poolSpentHKD = (pCurr === 'JPY') ? poolSpent*RATE : poolSpent;
-            document.getElementById('totalSpend').innerText=fmtMoney(tg + poolSpentHKD); 
-            renderPie(catTotals, (tg + poolSpentHKD)); 
+            // Total includes Pool spending converted to HKD
+            let poolSpentInHKD = poolPaidHKD + (poolPaidJPY * RATE);
+            document.getElementById('totalSpend').innerText=fmtMoney(tg + poolSpentInHKD); 
+            renderPie(catTotals, (tg + poolSpentInHKD)); 
             renderSettlement(tg,pb);
         }
 
@@ -590,17 +578,10 @@
             h+=`</tbody></table>`; tb.innerHTML=h;
         }
 
-        // PIE CHART FIX
         function renderPie(c,t){
             let d=0,css=[],i=0;
             const legendEl = document.getElementById('pieLegend'); legendEl.innerHTML='';
-            
-            // Ensure t > 0 to avoid division by zero
-            if (t <= 0) {
-                document.getElementById('poolPie').style.background = '#eee';
-                return;
-            }
-
+            if (t <= 0) { document.getElementById('poolPie').style.background = '#eee'; return; }
             for(let k in c){
                 if(c[k]>0){
                     let p=(c[k]/t)*360;
@@ -610,15 +591,16 @@
                     legendEl.innerHTML += `<div class="legend-item"><div class="dot" style="background:${col}"></div>${k} (${Math.round((c[k]/t)*100)}%)</div>`;
                 }
             }
-            if(css.length > 0){
-                document.getElementById('poolPie').style.background=`conic-gradient(${css.join(',')})`;
-            }
+            if(css.length > 0) document.getElementById('poolPie').style.background=`conic-gradient(${css.join(',')})`;
         }
 
         function renderPackList(){
             const c=document.getElementById('packListContainer'); c.innerHTML='';
             if(!appData.packList) return;
             
+            let totalChecks = 0;
+            let totalItems = 0;
+
             PACK_CATEGORIES.forEach(cat => {
                 const items = appData.packList.filter(i => i.cat === cat);
                 if(items.length > 0){
@@ -628,14 +610,17 @@
                     c.appendChild(header);
                     
                     items.forEach((item) => {
+                        totalItems += 4; // 4 people per item
+                        
                         const d = document.createElement('div');
                         d.className = 'pack-item';
                         let html = `<div class="pack-row-top"><span>${item.text}</span><span style="color:#e74c3c;cursor:pointer;" onclick="delPack(${item.id})">×</span></div>`;
                         html += `<div class="pack-row-checks">`;
                         
                         PEOPLE.forEach(p => {
-                            const isChecked = item.checks && item.checks[p] ? 'checked' : '';
-                            html += `<div class="p-bubble ${isChecked}" onclick="togPack(${item.id}, '${p}')">${p}</div>`;
+                            const isChecked = item.checks && item.checks[p];
+                            if(isChecked) totalChecks++;
+                            html += `<div class="p-bubble ${isChecked ? 'checked' : ''}" onclick="togPack(${item.id}, '${p}')">${p}</div>`;
                         });
                         html += `</div>`;
                         d.innerHTML = html;
@@ -643,6 +628,11 @@
                     });
                 }
             });
+
+            // 2. PROGRESS BAR UPDATE
+            const pct = totalItems > 0 ? Math.round((totalChecks / totalItems)*100) : 0;
+            document.getElementById('packFill').style.width = pct + "%";
+            document.getElementById('packText').innerText = `Ready: ${pct}%`;
         }
         
         function addPackItem(){
@@ -650,6 +640,7 @@
             const cat=document.getElementById('newPackCat').value;
             if(v){
                 if(!appData.packList) appData.packList=[];
+                // 5. FIX ID generation and save
                 appData.packList.push({id:Date.now(), cat:cat, text:v, checks:{Cho:false,Dan:false,Diaz:false,Skye:false}});
                 save();
                 document.getElementById('newPackItem').value='';
@@ -658,6 +649,7 @@
         }
         
         function togPack(id, person){
+            // 7. FIX TICKING
             const item = appData.packList.find(x => x.id === id);
             if(item){
                 if(!item.checks) item.checks = {Cho:false,Dan:false,Diaz:false,Skye:false};
@@ -675,17 +667,15 @@
             }
         }
 
-        // MAP NAVIGATION LOGIC
         function showMap(l){
-            const event = appData.schedule.find(e => e.loc === l);
-            const searchQ = (event && /^\d[\d\s]*$/.test(l)) ? event.title + " Hokkaido" : l + " Hokkaido";
-            
-            document.getElementById('dashMapFrame').src=`https://maps.google.com/maps?q=${encodeURIComponent(searchQ)}&output=embed`;
+            // 6. MAP FIX
+            const searchQ = l + " Hokkaido";
+            document.getElementById('dashMapFrame').src=`https://maps.google.com/maps?q=${encodeURIComponent(searchQ)}&t=&z=13&ie=UTF8&iwloc=&output=embed`;
             
             const btn = document.getElementById('mapBtn');
             btn.innerText = "📍 Navigate Here";
             btn.classList.add('nav-mode');
-            btn.href = `https://www.google.com/maps/embed?pb=...{encodeURIComponent(l)}`;
+            btn.href = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(l)}`;
             
             document.getElementById('dashInfo').style.display='none';
             document.getElementById('dashMapFrame').style.display='block';
@@ -700,25 +690,115 @@
             const btn = document.getElementById('mapBtn');
             btn.innerText = "🗺️ Open Full Map";
             btn.classList.remove('nav-mode');
-            btn.href = "https://maps.app.goo.gl/c5XAecG5huUmNr6x6?g_st=i";
+            btn.href = "https://www.google.com/maps";
         }
         
         let eId=null;
         function editEvent(e,id){e.stopPropagation();openModal('plan',appData.schedule.find(x=>x.id===id));}
         function editExp(id){openModal('spend',appData.expenses.find(x=>x.id===id));}
+        
+        // 5. FIX MODAL OPENING
         function openModal(m,d){
-            document.getElementById('modal').classList.add('open');document.getElementById('mMode').value=m;
-            document.getElementById('fPlan').style.display=m==='plan'?'block':'none';document.getElementById('fSpend').style.display=m==='spend'?'block':'none';
-            if(d){eId=d.id;document.getElementById('mTitle').innerText='Edit';if(m==='plan'){document.getElementById('inpStart').value=d.start;document.getElementById('inpEnd').value=d.end;document.getElementById('inpTitle').value=d.title;document.getElementById('inpLoc').value=d.loc;}else{document.getElementById('spItem').value=d.item;document.getElementById('spAmt').value=d.amount;document.getElementById('spCurr').value=d.curr;document.getElementById('spCat').value=d.cat;document.getElementById('spPayer').value=d.payer;document.getElementById('spMethod').value=d.method||'Credit Card';document.getElementById('spType').value=d.type||'Group';}}
-            else{eId=null;document.getElementById('mTitle').innerText='Add New';}
+            document.getElementById('modal').classList.add('open');
+            document.getElementById('mMode').value=m;
+            
+            document.getElementById('fPlan').style.display=m==='plan'?'block':'none';
+            document.getElementById('fSpend').style.display=m==='spend'?'block':'none';
+            document.getElementById('fPool').style.display=m==='pool'?'block':'none';
+            
+            // HIDE DELETE BUTTON IF POOL MODE
+            document.getElementById('btnDel').style.display = m==='pool' ? 'none' : 'block';
+
+            if(m === 'pool'){
+                document.getElementById('mTitle').innerText = "Edit Pool Fund";
+                document.getElementById('plHKD').value = appData.poolHKD || 0;
+                document.getElementById('plJPY').value = appData.poolJPY || 0;
+                eId = null;
+                return;
+            }
+
+            if(d){
+                eId=d.id;
+                document.getElementById('mTitle').innerText='Edit';
+                if(m==='plan'){
+                    document.getElementById('inpStart').value=d.start;
+                    document.getElementById('inpEnd').value=d.end;
+                    document.getElementById('inpTitle').value=d.title;
+                    document.getElementById('inpLoc').value=d.loc;
+                } else {
+                    document.getElementById('spItem').value=d.item;
+                    document.getElementById('spAmt').value=d.amount;
+                    document.getElementById('spCurr').value=d.curr;
+                    document.getElementById('spCat').value=d.cat;
+                    document.getElementById('spPayer').value=d.payer;
+                    document.getElementById('spMethod').value=d.method||'Credit Card';
+                    document.getElementById('spType').value=d.type||'Group';
+                }
+            } else {
+                eId=null;
+                document.getElementById('mTitle').innerText='Add New';
+                // Reset fields
+                if(m==='spend') { document.getElementById('spItem').value=''; document.getElementById('spAmt').value=''; }
+                if(m==='plan') { document.getElementById('inpTitle').value=''; document.getElementById('inpLoc').value=''; }
+            }
         }
+        
         function closeModal(){document.getElementById('modal').classList.remove('open');}
-        function doSave(){const m=document.getElementById('mMode').value;if(m==='plan'){const s=document.getElementById('inpStart').value,e=document.getElementById('inpEnd').value,t=document.getElementById('inpTitle').value,l=document.getElementById('inpLoc').value;if(eId){const i=appData.schedule.findIndex(x=>x.id===eId);Object.assign(appData.schedule[i],{start:s,end:e,title:t,loc:l});}else {if(!appData.schedule)appData.schedule=[];appData.schedule.push({id:Date.now(),date:appData.currDate,start:s,end:e,title:t,loc:l});}}else{const i=document.getElementById('spItem').value,a=parseFloat(document.getElementById('spAmt').value),c=document.getElementById('spCurr').value,ct=document.getElementById('spCat').value,p=document.getElementById('spPayer').value,mt=document.getElementById('spMethod').value,ty=document.getElementById('spType').value;if(eId){const ix=appData.expenses.findIndex(x=>x.id===eId);Object.assign(appData.expenses[ix],{item:i,amount:a,curr:c,cat:ct,payer:p,method:mt,type:ty});}else {if(!appData.expenses)appData.expenses=[];appData.expenses.push({id:Date.now(),item:i,amount:a,curr:c,cat:ct,payer:p,method:mt,type:ty});}}save();closeModal();}
-        function doDelete(){if(eId&&confirm('Delete?')){const m=document.getElementById('mMode').value;if(m==='plan')appData.schedule=appData.schedule.filter(x=>x.id!==eId);else appData.expenses=appData.expenses.filter(x=>x.id!==eId);save();closeModal();}}
+        
+        // 5. FIX SAVE FUNCTION
+        function doSave(){
+            const m=document.getElementById('mMode').value;
+            
+            if(m==='pool'){
+                appData.poolHKD = parseFloat(document.getElementById('plHKD').value) || 0;
+                appData.poolJPY = parseFloat(document.getElementById('plJPY').value) || 0;
+                save();
+                refresh();
+                closeModal();
+                return;
+            }
+
+            if(m==='plan'){
+                const s=document.getElementById('inpStart').value,e=document.getElementById('inpEnd').value,t=document.getElementById('inpTitle').value,l=document.getElementById('inpLoc').value;
+                if(eId){
+                    const i=appData.schedule.findIndex(x=>x.id===eId);
+                    if(i>=0) Object.assign(appData.schedule[i],{start:s,end:e,title:t,loc:l});
+                } else {
+                    if(!appData.schedule) appData.schedule=[];
+                    appData.schedule.push({id:Date.now(),date:appData.currDate,start:s,end:e,title:t,loc:l});
+                }
+            } else if (m==='spend') {
+                const i=document.getElementById('spItem').value,a=parseFloat(document.getElementById('spAmt').value),c=document.getElementById('spCurr').value,ct=document.getElementById('spCat').value,p=document.getElementById('spPayer').value,mt=document.getElementById('spMethod').value,ty=document.getElementById('spType').value;
+                if(eId){
+                    const ix=appData.expenses.findIndex(x=>x.id===eId);
+                    if(ix>=0) Object.assign(appData.expenses[ix],{item:i,amount:a,curr:c,cat:ct,payer:p,method:mt,type:ty});
+                } else {
+                    if(!appData.expenses) appData.expenses=[];
+                    appData.expenses.push({id:Date.now(),item:i,amount:a,curr:c,cat:ct,payer:p,method:mt,type:ty});
+                }
+            }
+            save();
+            refresh();
+            closeModal();
+        }
+        
+        function doDelete(){
+            if(eId && confirm('Delete?')){
+                const m=document.getElementById('mMode').value;
+                if(m==='plan') appData.schedule=appData.schedule.filter(x=>x.id!==eId);
+                else appData.expenses=appData.expenses.filter(x=>x.id!==eId);
+                save();
+                refresh();
+                closeModal();
+            }
+        }
         
         function clickAdd(){
             const p=document.querySelector('.page.active').id;
-            if(p==='pg-pack') return;
+            // 5. FIX: ALLOW ADD ON PACK PAGE (Focus input)
+            if(p==='pg-pack') {
+                document.getElementById('newPackItem').focus();
+            }
             else openModal(p==='pg-plan'?'plan':'spend',null);
         }
         
@@ -727,9 +807,11 @@
             document.getElementById('pg-'+p).classList.add('active');
             document.querySelectorAll('.nav-btn').forEach(x=>x.classList.remove('active'));
             event.currentTarget.classList.add('active');
+            
+            // Toggle FAB visibility/function
             const fab = document.getElementById('mainFab');
-            if(p === 'pack') fab.style.opacity = '0';
-            else fab.style.opacity = '1';
+            if(p === 'pack') fab.innerHTML = '⌨️'; // Keyboard icon for typing
+            else fab.innerHTML = '+';
         }
         
         function renderDates(){
@@ -742,13 +824,11 @@
                 div.onclick=()=>{
                     appData.currDate=d; closeMap();
                     refresh();
-                    save(); 
                 };
                 el.appendChild(div);
             }
         }
         
-        // Start App
         initApp();
     </script>
 </body>

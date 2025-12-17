@@ -24,11 +24,9 @@
         }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'M PLUS Rounded 1c', sans-serif !important; }
         
-        /* --- 1. REFINED EDGE & SCROLL BEHAVIOR --- */
         html {
             width: 100%;
             height: 100%;
-            /* Prevents rubber-banding on all edges */
             overscroll-behavior: none; 
         }
         body {
@@ -38,24 +36,23 @@
             min-height: 100vh;
             color: var(--text-dark); 
             padding-bottom: 110px; 
-            /* Prevents horizontal scroll/peeking on edges */
             overflow-x: hidden; 
             overflow-y: auto;
             -webkit-overflow-scrolling: touch;
-            background-color: #f0f2f5; /* Light fallback color */
+            background-color: #f0f2f5;
             background: url('mailbox.png') no-repeat center center fixed; 
             background-size: cover; 
         }
         
         .glass-panel { background: var(--glass-bg); backdrop-filter: var(--glass-blur); border: var(--glass-border); box-shadow: var(--glass-shadow); border-radius: 24px; }
         
-        /* --- 2. SNOW MOVED LOWER BY ~0.5cm (from -45px to -25px) --- */
+        /* --- 1. SNOW LOWERED 1cm (Approx 38px down from -25px) --- */
         .snow-topper { position: relative; overflow: visible !important; }
         .snow-topper::after {
             content: ''; 
             position: absolute; 
-            /* Adjusted down by 20px */
-            top: -25px; 
+            /* Set to positive 12px to push it down onto the block */
+            top: 12px; 
             right: 0; 
             width: 33%; 
             height: 50px;
@@ -110,7 +107,6 @@
         .now-line::after { content: ''; position: absolute; left: -4px; top: -3px; width: 8px; height: 8px; background: var(--fuji-red); border-radius: 50%; }
 
         .t-event { position: absolute; left: 10px; right: 15px; background: rgba(244, 242, 233, 0.95); border-radius: 12px; padding: 6px 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.08); z-index: 10; cursor: pointer; border: 1px solid rgba(0,0,0,0.05); }
-        
         .t-title { font-weight: 800; font-size: 13px; color: var(--fuji-teal); margin-bottom: 2px; line-height: 1.1; }
         .t-loc { font-size: 10px; color: #666; }
         .card-edit-btn { position: absolute; top: 5px; right: 5px; width: 24px; height: 24px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; color: var(--fuji-teal); cursor: pointer; z-index: 20; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
@@ -118,11 +114,16 @@
         .chart-card { padding: 20px; margin: 15px; background: var(--glass-bg); backdrop-filter: var(--glass-blur); border-radius: 24px; border: var(--glass-border); box-shadow: var(--glass-shadow); }
         .exp-group-title { margin: 15px 15px 8px 15px; font-size: 13px; font-weight: 800; color: var(--fuji-teal); opacity: 0.8; letter-spacing: 0.5px; border-bottom: 2px solid rgba(42, 75, 85, 0.1); padding-bottom: 4px; }
         .exp-block { padding: 14px; margin: 0 15px 8px 15px; display: flex; justify-content: space-between; align-items: center; position: relative; background: rgba(255,255,255,0.9); backdrop-filter: blur(10px); border-radius: 16px; box-shadow: 0 4px 8px rgba(0,0,0,0.05); }
+        
+        /* --- 2. EXPENSE ALIGNMENT FIX --- */
+        .exp-left { flex: 1; }
+        .exp-right { text-align: right; min-width: 80px; margin-left: auto; }
+        
         .exp-cat { font-size: 14px; font-weight: 800; color: var(--fuji-teal); }
         .exp-item { font-size: 12px; color: #444; font-weight: 600; }
         .exp-pay { font-size: 10px; color: var(--fuji-red); background:#fff0f0; padding:2px 6px; border-radius:4px; margin-left:5px; }
-        .exp-amt { font-size: 15px; font-weight: 800; color: #111; letter-spacing: -0.5px; }
-        .exp-avg { font-size: 10px; color: #666; margin-top: 2px; }
+        .exp-amt { font-size: 15px; font-weight: 800; color: #111; letter-spacing: -0.5px; display: block; }
+        .exp-avg { font-size: 10px; color: #666; margin-top: 2px; display: block; }
         .pie-legend { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 15px; }
         .legend-item { font-size: 10px; display: flex; align-items: center; gap: 4px; background: rgba(255,255,255,0.5); padding: 4px 8px; border-radius: 8px; }
         .dot { width: 8px; height: 8px; border-radius: 50%; }
@@ -436,7 +437,7 @@
         function initApp() {
             firebase.initializeApp(firebaseConfig);
             const db = firebase.database();
-            dbRef = db.ref('hokkaido_v25_refine_3'); 
+            dbRef = db.ref('hokkaido_v25_refine_4'); 
             
             dbRef.on('value', (snapshot) => {
                 const val = snapshot.val();
@@ -510,7 +511,7 @@
             
             const h = HOTEL_INFO[appData.currDate];
             if (h) {
-                const mapLink = h.code.includes("MapCode") || h.code.includes("Address") ? `http://googleusercontent.com/maps.google.com/2{encodeURIComponent(h.code)}` : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(h.name + ' Hokkaido')}`;
+                const mapLink = h.code.includes("MapCode") || h.code.includes("Address") ? `https://maps.google.com/maps?q=${encodeURIComponent(h.code)}` : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(h.name + ' Hokkaido')}`;
                 document.getElementById('hotelBar').innerHTML = `
                     <div class="hotel-name">🏨 ${h.name}</div>
                     <a href="${mapLink}" target="_blank" class="hotel-map-link">📍 ${h.code}</a>
@@ -613,7 +614,6 @@
                         if(pb[e.payer]!==undefined) pb[e.payer]+=vHKD; 
                     }
                     
-                    // --- 2. PIE CHART FIX: ALL TRANSACTIONS COUNT ---
                     if(e.cat) { 
                         catTotals[e.cat] = (catTotals[e.cat] || 0) + vHKD;
                     }
@@ -647,7 +647,6 @@
             let poolSpentInHKD = poolPaidHKD + (poolPaidJPY * RATE);
             let totalSpendingForDisplay = tg + poolSpentInHKD;
 
-            // Recalculate Pie Total from categories to match slices exactly
             let pieTotal = 0;
             for(let k in catTotals) pieTotal += catTotals[k];
 
